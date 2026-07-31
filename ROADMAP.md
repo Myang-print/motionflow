@@ -13,37 +13,41 @@ The PRD defines scope; this file is the short execution view. Dates are intentio
 
 ## Next — M1 Core engine
 
-- [ ] Monotonic clock and easing primitives.
-- [ ] Timeline state machine and continuous retargeting.
-- [ ] One active-only frame scheduler and repaint coalescing.
-- [ ] Immutable policy, profiles, Reduced Motion, and Power Save Mode.
-- [ ] Bounded metrics and adaptive degradation.
-- [ ] Deterministic and performance tests.
+- [x] Monotonic clock and easing primitives.
+- [x] Timeline state machine and continuous retargeting.
+- [x] One active-only frame scheduler and repaint coalescing.
+- [x] Immutable policy, profiles, Reduced Motion, and Power Save Mode.
+- [x] Bounded metrics and adaptive degradation.
+- [x] Deterministic and scheduler/capacity tests.
 
 ## Then — M2–M3 Product alpha
 
-- [ ] Versioned settings service and accessible settings UI.
-- [ ] Capability registry and editor lifecycle manager.
-- [ ] Caret trail.
-- [ ] Click ripple.
-- [ ] Active-line navigation pulse.
+- [x] Versioned settings service and accessible settings UI.
+- [x] Capability registry and editor lifecycle manager.
+- [x] Caret trail.
+- [x] Click ripple.
+- [x] Active-line navigation pulse.
 - [ ] Editor churn/leak and typing-latency qualification.
 
 ## Later — M4–M5 Workbench beta
 
-- [ ] Selected-editor context cue.
-- [ ] Tool-window focus cue.
-- [ ] Optional inactive-frame dim overlay.
-- [ ] Toggle/settings/diagnostics actions.
-- [ ] Theme, DPI, accessibility, and failure-isolation polish.
+- [x] Selected-editor context cue.
+- [x] Tool-window focus cue.
+- [x] Optional inactive-frame dim overlay.
+- [x] Toggle/settings/diagnostics actions.
+- [x] Theme-aware contrast, accessibility policy, and failure isolation.
 
 ## Release — M6–M7
 
-- [ ] Full Plugin Verifier and product/OS/scale matrix.
+- [x] Plugin Verifier against the 2025.3 target and latest resolved IDE.
+- [x] Windows sandbox startup and clean plugin-load log.
+- [x] Cross-platform hosted test workflow and tag-gated release automation.
+- [x] Marketplace metadata, branding, checksums, and signing/publishing integration.
+- [ ] Product/OS/theme/scale interactive matrix.
 - [ ] Dynamic unload, retained-heap, and performance gates.
 - [ ] Closed beta with at least ten representative users.
 - [ ] Signed private-channel release candidate.
-- [ ] Marketplace-ready `0.1.0`.
+- [x] Marketplace-ready `0.1.0` source candidate.
 
 ## Research-only candidates
 

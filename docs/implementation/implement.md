@@ -26,7 +26,7 @@ Surface adapters ──► immutable effect requests ──► motion policy
     └──────────────────────────────────────────► motion engine
                                                     │
                                                     ▼
-                                            disposable painters
+                                      disposable layered overlays
                                                     │
                                                     ▼
                                               Swing repaint
@@ -241,7 +241,7 @@ Dependency: M1 and M2. Can proceed in parallel with M3 after shared foundations 
 
 - Off by default.
 - Observe window focus without a process-wide AWT listener if a narrower frame lifecycle API suffices.
-- Paint a translucent, input-transparent overlay using the IDE glass pane.
+- Paint a translucent, input-transparent plugin component in the frame's standard Swing layered pane.
 - Exclude dialogs/popups/high contrast/Power Save/reduced motion.
 - Requirements: MF-WB-005–008.
 - Tests: multi-frame focus, modal dialog, alt-tab, disable while dimmed, project dispose.

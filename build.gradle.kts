@@ -28,9 +28,28 @@ intellijPlatform {
     projectName = "MotionFlow"
 
     pluginConfiguration {
+        changeNotes = """
+            <h3>MotionFlow 0.1.0</h3>
+            <ul>
+              <li>Bounded caret trail, click ripple, and large-navigation pulse.</li>
+              <li>Editor-context, tool-window, and optional inactive-frame cues.</li>
+              <li>Four profiles, Reduced Motion, Power Save behavior, and live settings.</li>
+              <li>One active-only motion clock, failure isolation, and redacted local diagnostics.</li>
+            </ul>
+        """.trimIndent()
         ideaVersion {
             sinceBuild = "253"
         }
+    }
+
+    signing {
+        certificateChain = providers.environmentVariable("CERTIFICATE_CHAIN")
+        privateKey = providers.environmentVariable("PRIVATE_KEY")
+        password = providers.environmentVariable("PRIVATE_KEY_PASSWORD")
+    }
+
+    publishing {
+        token = providers.environmentVariable("PUBLISH_TOKEN")
     }
 
     pluginVerification {
@@ -38,5 +57,14 @@ intellijPlatform {
             current()
             latest()
         }
+    }
+}
+
+tasks.named<org.gradle.jvm.tasks.Jar>("jar") {
+    from(layout.projectDirectory.file("LICENSE")) {
+        into("META-INF")
+    }
+    from(layout.projectDirectory.file("THIRD_PARTY_NOTICES.md")) {
+        into("META-INF")
     }
 }

@@ -2,7 +2,7 @@
 
 ## Supported versions
 
-MotionFlow has not published a stable version yet. Security fixes will target the latest maintained release once releases begin.
+Security fixes target the latest maintained `0.1.x` release line.
 
 ## Reporting a vulnerability
 
@@ -23,4 +23,3 @@ Please allow reasonable time for triage and a coordinated fix before disclosure.
 ## Security boundaries
 
 Stable MotionFlow releases must not use reflection/internal APIs, modify IDE files, load arbitrary or remote code, transmit telemetry, or read document content. See the [PRD](docs/PRD.md) and [privacy policy](PRIVACY.md).
-

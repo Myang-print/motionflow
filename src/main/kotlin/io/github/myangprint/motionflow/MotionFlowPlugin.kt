@@ -4,5 +4,6 @@ package io.github.myangprint.motionflow
 object MotionFlowPlugin {
     const val ID = "io.github.myangprint.motionflow"
     const val DISPLAY_NAME = "MotionFlow"
-}
 
+    fun version(): String = MotionFlowPlugin::class.java.`package`.implementationVersion ?: "development"
+}

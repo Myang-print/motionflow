@@ -98,13 +98,9 @@ Global disable, settings reset, project close, frame dispose, plugin unload, or 
 
 ## 5. Painter strategy
 
-Use `IdeGlassPaneUtil.installPainter(target, painter, parentDisposable)` only after Plugin Verifier confirms support for every declared baseline. Painters are target-relative and registered with the shortest owner.
+Use the plugin-owned `SurfaceOverlay`, which adds an input-transparent `JComponent` to the target root pane's standard Swing `JLayeredPane`. The target remains in place and retains its layout, border, and UI delegate. The overlay tracks target hierarchy/bounds and is removed by the shortest owner disposable.
 
-If that API becomes unavailable in a target platform:
-
-- mark the affected capability unsupported;
-- keep the plugin functional without the effect;
-- do not reach for an internal glass-pane implementation.
+`IdeGlassPaneUtil.installPainter` is not used because the 2025.3.6 SDK marks it internal. If a standard layered pane is unavailable, mark the capability unsupported and keep the plugin functional without that effect.
 
 Painter implementations copy `Graphics2D`, clip to the target, draw from immutable state, dispose the copy, and never intercept input.
 
@@ -155,4 +151,3 @@ These behaviors either interfere with platform layout/input or lack a supported 
 - Windows/macOS/Linux frame decorations;
 - light/dark/high-contrast themes and mixed DPI;
 - remote frontend after the feature enters compatibility scope.
-

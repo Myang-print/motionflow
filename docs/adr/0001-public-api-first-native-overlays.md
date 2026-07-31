@@ -13,12 +13,15 @@ VSCode Animations injects CSS and JavaScript into an Electron DOM. IntelliJ Plat
 Stable MotionFlow features will:
 
 - observe supported platform events after state changes;
-- render non-interactive overlays through supported painter/component APIs;
+- render non-interactive overlays as plugin-owned `JComponent`s in the standard Swing `JLayeredPane`;
+- leave the target component, its parent, layout manager, border, and UI delegate unchanged;
 - attach all resources to `Disposable` lifetimes;
 - fail closed when a surface is unavailable;
 - pass Plugin Verifier with no internal-API violations.
 
 Stable code will not use reflection, internal/implementation APIs, component class-name probing, UI delegate/layout replacement, Java agents, bytecode instrumentation, IDE-file patching, or arbitrary scripts/styles.
+
+During implementation, `IdeGlassPaneUtil.installPainter` was verified to carry `@ApiStatus.Internal` in the 2025.3.6 SDK. It is therefore prohibited despite being a public Java method. The accepted overlay host uses only JDK/Swing APIs: it locates the target's existing root layered pane, adds an input-transparent plugin component below popup layers, tracks target hierarchy/bounds, and removes itself through its owner disposable.
 
 ## Consequences
 
@@ -26,6 +29,7 @@ Positive:
 
 - normal Marketplace installation and dynamic unload remain feasible;
 - platform behavior stays authoritative;
+- the overlay mechanism remains independent of IntelliJ implementation classes;
 - unsupported products degrade safely;
 - compatibility issues are easier to isolate.
 
@@ -33,6 +37,7 @@ Negative:
 
 - some visually attractive effects cannot be implemented now;
 - true tab/popup/layout animations may remain unavailable;
+- layered-pane geometry and input transparency require explicit cross-platform visual testing;
 - feature count grows more slowly than an implementation that patches internals.
 
 ## Alternatives rejected
@@ -45,4 +50,3 @@ Negative:
 ## Reconsideration trigger
 
 A specific public API may enable a previously deferred effect. That effect can be added without reversing this ADR. Reversing the public-API boundary requires a new ADR and PRD/Marketplace/security review.
-

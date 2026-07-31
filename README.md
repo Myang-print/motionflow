@@ -1,90 +1,114 @@
-# MotionFlow
+<p align="center">
+  <img src="docs/assets/motionflow-logo.svg" width="128" alt="MotionFlow logo">
+</p>
 
-MotionFlow is a native, configurable motion system for IntelliJ Platform IDEs. It aims to make caret movement, editor changes, tool-window focus, and other state transitions easier to follow without delaying input or modifying platform behavior.
+<h1 align="center">MotionFlow</h1>
 
-> **Project status:** foundation/design phase. The repository is buildable, but animation effects are not implemented yet. The accepted scope and engineering gates are defined before feature work begins.
+<p align="center">
+  Smooth, native visual feedback for IntelliJ Platform IDEs—without delaying input or patching the IDE.
+</p>
 
-## Why MotionFlow
+<p align="center">
+  <a href="https://github.com/Myang-print/motionflow/actions/workflows/build.yml"><img alt="Build" src="https://github.com/Myang-print/motionflow/actions/workflows/build.yml/badge.svg"></a>
+  <a href="LICENSE"><img alt="Apache 2.0" src="https://img.shields.io/badge/license-Apache--2.0-6C63FF"></a>
+  <a href="https://github.com/Myang-print/motionflow/releases"><img alt="Release" src="https://img.shields.io/github/v/release/Myang-print/motionflow?display_name=tag&sort=semver"></a>
+  <img alt="IntelliJ Platform 2025.3+" src="https://img.shields.io/badge/IntelliJ%20Platform-2025.3%2B-43D9AD">
+</p>
 
-[VSCode Animations](https://github.com/BrandonKirbyson/VSCode-Animations) demonstrates how much polish thoughtful motion can add to an editor. VS Code uses an Electron DOM; IntelliJ Platform IDEs use Swing/JBR. MotionFlow is therefore an independent native implementation, not a CSS/JavaScript port.
+![MotionFlow hero](docs/assets/motionflow-hero.png)
 
-The central invariant is:
+MotionFlow observes completed IDE state changes and renders brief, input-transparent cues. The platform remains authoritative: motion never consumes events, moves the caret, changes documents, delays selection, or animates platform-owned layout geometry.
 
-> Motion may clarify an IDE state transition, but it must never delay, block, reorder, or alter that transition.
+> **Status:** `0.1.0` engineering-complete release candidate. Automated package and compatibility gates pass; interactive qualification and signed Marketplace publication are tracked without overstating them in [release readiness](docs/evidence/release-readiness.md).
 
-Planned MVP effects include:
+## Features
 
-- an event-driven editor caret trail;
-- editor click ripple and large-navigation active-line pulse;
-- selected-editor and tool-window context cues;
-- optional inactive-frame dimming;
-- motion profiles, Reduced Motion, Power Save Mode integration, and local diagnostics.
+| Surface | Visual feedback | Safety behavior |
+| --- | --- | --- |
+| Editor | Bounded caret trail | Primary caret only; never replaces or moves the native caret |
+| Editor | Click ripple | Primary-button click only; drag, popup, and right-click are ignored |
+| Editor | Navigation pulse | Triggers only after a configurable large visual-line jump |
+| Editor context | Selected-editor edge cue | No editor-tab traversal or geometry mutation |
+| Tool windows | Focus outline | Observes activation; never resizes or delays the tool window |
+| Project frame | Optional inactive-frame dim | Off by default; immediately cleared on focus, disable, or disposal |
+| Control | Subtle, Balanced, Expressive, and Custom profiles | Live Apply, instant global toggle, independent effect switches |
+| Accessibility | Reduced Motion and high-contrast simplification | Spatial effects stop; orientation cues are capped at 80 ms |
+| Operations | Redacted local diagnostics | No telemetry, paths, project names, file names, or document text |
 
-The stable plugin will use supported APIs only. It will not patch IDE files, inject code, use reflection/internal APIs, replace UI delegates, or run an idle animation loop.
+![MotionFlow effect families](docs/assets/effects.svg)
 
-## Documentation map
+## Install
 
-- [Product requirements](docs/PRD.md)
-- [Implementation plan](docs/implementation/implement.md)
-- [Detailed implementation designs](docs/implementation/details/)
-- [Requirement traceability](docs/traceability-matrix.md)
-- [VSCode Animations analysis](docs/research/upstream-analysis.md)
-- [IntelliJ Platform feasibility](docs/research/platform-feasibility.md)
-- [Architecture decisions](docs/adr/)
-- [Roadmap](ROADMAP.md)
-- [Contributing](CONTRIBUTING.md)
+### From a GitHub release
+
+1. Download `MotionFlow-0.1.0.zip` from [Releases](https://github.com/Myang-print/motionflow/releases).
+2. In the IDE, open **Settings | Plugins**.
+3. Select the gear menu, choose **Install Plugin from Disk…**, and select the ZIP.
+
+### Build locally
+
+Requirements: JDK 21; no global Gradle installation is required.
+
+```powershell
+git clone https://github.com/Myang-print/motionflow.git
+cd motionflow
+./gradlew.bat check verifyPluginProjectConfiguration verifyPluginStructure buildPlugin
+```
+
+The installable ZIP is written to `build/distributions/`.
+
+## Use
+
+Open **Settings | Appearance & Behavior | MotionFlow** to select a profile, enable Reduced Motion, tune editor/workbench effects, or run the isolated one-shot preview.
+
+Find Action also exposes:
+
+- **MotionFlow: Toggle Motion**
+- **MotionFlow: Open Settings**
+- **MotionFlow: Copy Diagnostics**
+
+See the [user guide](docs/USER_GUIDE.md) and [troubleshooting guide](docs/TROUBLESHOOTING.md).
+
+## Architecture
+
+![MotionFlow architecture](docs/assets/architecture.svg)
+
+MotionFlow uses supported IntelliJ event APIs and standard JDK/Swing overlays. One application-level `javax.swing.Timer` advances every active timeline and stops when the registry becomes empty. Mutable animation state is EDT-confined and bounded to 64 global timelines, 8 per surface, 12 trail points, 3 ripples per editor, and 512 timing samples.
+
+The implementation deliberately does **not** use CSS/JavaScript injection, reflection, internal APIs, Java agents, IDE-file modification, component re-parenting, UI-delegate replacement, or a process-wide AWT event hook.
+
+Read the [PRD](docs/PRD.md), [implementation plan](docs/implementation/implement.md), [ADRs](docs/adr/), and [requirement traceability matrix](docs/traceability-matrix.md) for the complete engineering contract.
+
+Release evidence is recorded in [automated validation](docs/evidence/automated-validation.md), [compatibility](docs/evidence/compatibility.md), and [performance/resource evidence](docs/evidence/performance.md).
+
+## Compatibility
+
+- Minimum platform: IntelliJ Platform 2025.3, build `253`
+- Build target: IntelliJ IDEA 2025.3.6
+- Toolchain: Java 21, Kotlin, Gradle 9.5.0
+- Dependency: `com.intellij.modules.platform`
+
+The classic plugin is designed for IntelliJ Platform products, but a product is listed as verified only after its Plugin Verifier and smoke-test cell is recorded. Remote development and true tab/layout animations are not advertised in `0.1.0`.
+
+## Privacy and security
+
+MotionFlow makes no network requests, collects no telemetry, reads no document text, and stores no workspace history. Diagnostics are constructed from a fixed schema and sanitized before copying. See [Privacy](PRIVACY.md) and [Security](SECURITY.md).
 
 ## Development
 
-Requirements:
-
-- JDK 21 (the Gradle toolchain resolver can provision it);
-- no global Gradle installation is required;
-- IntelliJ IDEA 2025.3+ is recommended for development.
-
-On Windows PowerShell:
-
 ```powershell
-.\gradlew.bat check
-.\gradlew.bat verifyPluginProjectConfiguration
-.\gradlew.bat verifyPluginStructure
-.\gradlew.bat buildPlugin
+./gradlew.bat check
+./gradlew.bat verifyPluginProjectConfiguration
+./gradlew.bat verifyPluginStructure
+./gradlew.bat buildPlugin
+./gradlew.bat verifyPlugin
+./gradlew.bat runIde
 ```
 
-Run a sandbox IDE:
+Read [CONTRIBUTING.md](CONTRIBUTING.md) before changing an effect. Each feature must preserve lifecycle, accessibility, performance, privacy, and supported-API invariants—not merely look correct in one IDE.
 
-```powershell
-.\gradlew.bat runIde
-```
+## Inspiration and license
 
-To validate against an already installed compatible IDE without downloading another distribution:
+[VSCode Animations](https://github.com/BrandonKirbyson/VSCode-Animations) inspired the product direction. MotionFlow is an independent Swing/JBR implementation and copies no upstream code or artwork. Details are in [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md).
 
-```powershell
-.\gradlew.bat check -PlocalIdePath="C:\Program Files\JetBrains\IntelliJ IDEA 2025.3.1"
-```
-
-CI and normal builds target the latest 2025.3 patch (`2025.3.6`); `localIdePath` is a developer override only.
-
-Run the broader compatibility verifier (downloads additional IDE distributions):
-
-```powershell
-.\gradlew.bat verifyPlugin
-```
-
-## Compatibility baseline
-
-- Minimum IntelliJ Platform: 2025.3 / build 253
-- Build language: Kotlin
-- JVM bytecode/toolchain: Java 21
-- Gradle: Wrapper 9.5.0
-- IntelliJ Platform Gradle Plugin: 2.18.1
-
-Broad product and remote-development support are goals, not current release claims. Each claim must pass the matrix in the PRD and implementation plan.
-
-## Privacy
-
-MotionFlow is designed to make no network requests, collect no telemetry, read no document text, and retain no workspace history. See [PRIVACY.md](PRIVACY.md).
-
-## License
-
-Apache License 2.0. See [LICENSE](LICENSE). VSCode Animations is credited as product inspiration in [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md).
+Licensed under the [Apache License 2.0](LICENSE).

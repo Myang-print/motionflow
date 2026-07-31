@@ -1,0 +1,65 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="620" viewBox="0 0 1200 620" role="img" aria-labelledby="title description">
+  <title id="title">MotionFlow architecture</title>
+  <desc id="description">Supported IntelliJ events flow through policy and capability checks into one motion engine, immutable visual models, and input-transparent Swing overlays.</desc>
+  <defs>
+    <linearGradient id="head" x1="0" y1="0" x2="1" y2="1">
+      <stop stop-color="#43D9AD"/><stop offset="1" stop-color="#6C63FF"/>
+    </linearGradient>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+      <path d="M0 0L10 5L0 10Z" fill="#7185A4"/>
+    </marker>
+    <style>
+      .bg{fill:#0F172A}.panel{fill:#172033;stroke:#334155;stroke-width:2}.core{fill:#17233F;stroke:#6C63FF;stroke-width:2}.surface{fill:#132B2B;stroke:#43D9AD;stroke-width:2}.title{font:700 26px system-ui,sans-serif;fill:#F8FAFC}.label{font:600 18px system-ui,sans-serif;fill:#F8FAFC}.copy{font:400 14px system-ui,sans-serif;fill:#B8C4D8}.small{font:600 13px system-ui,sans-serif;fill:#91A4C3}.arrow{fill:none;stroke:#7185A4;stroke-width:3;marker-end:url(#arrow)}
+    </style>
+  </defs>
+  <rect class="bg" width="1200" height="620" rx="28"/>
+  <rect x="36" y="28" width="1128" height="72" rx="18" fill="url(#head)" opacity="0.16"/>
+  <text x="70" y="72" class="title">MotionFlow: event → policy → motion → overlay</text>
+
+  <rect x="54" y="150" width="220" height="300" rx="20" class="panel"/>
+  <text x="78" y="190" class="label">Supported events</text>
+  <text x="78" y="230" class="copy">CaretListener</text>
+  <text x="78" y="262" class="copy">EditorMouseListener</text>
+  <text x="78" y="294" class="copy">FileEditorManagerListener</text>
+  <text x="78" y="326" class="copy">ToolWindowManagerListener</text>
+  <text x="78" y="358" class="copy">WindowFocusListener</text>
+  <text x="78" y="410" class="small">Observe after state changes</text>
+
+  <rect x="346" y="132" width="236" height="132" rx="20" class="panel"/>
+  <text x="370" y="172" class="label">Policy + capability</text>
+  <text x="370" y="207" class="copy">Profiles · Reduced Motion</text>
+  <text x="370" y="237" class="copy">Power Save · fail closed</text>
+
+  <rect x="346" y="316" width="236" height="152" rx="20" class="core"/>
+  <text x="370" y="357" class="label">One motion engine</text>
+  <text x="370" y="392" class="copy">Monotonic elapsed time</text>
+  <text x="370" y="422" class="copy">64 global · 8 per surface</text>
+  <text x="370" y="452" class="copy">No timer while idle</text>
+
+  <rect x="654" y="150" width="216" height="300" rx="20" class="panel"/>
+  <text x="678" y="190" class="label">Immutable models</text>
+  <text x="678" y="230" class="copy">Caret trail ≤ 12 points</text>
+  <text x="678" y="262" class="copy">Click ripples ≤ 3</text>
+  <text x="678" y="294" class="copy">Navigation pulse</text>
+  <text x="678" y="326" class="copy">Context/focus cue</text>
+  <text x="678" y="358" class="copy">Frame dim alpha</text>
+  <text x="678" y="410" class="small">Bounded, EDT-confined state</text>
+
+  <rect x="942" y="150" width="204" height="300" rx="20" class="surface"/>
+  <text x="966" y="190" class="label">Swing overlays</text>
+  <text x="966" y="230" class="copy">Plugin-owned JComponent</text>
+  <text x="966" y="262" class="copy">Standard JLayeredPane</text>
+  <text x="966" y="294" class="copy">Input-transparent</text>
+  <text x="966" y="326" class="copy">Disposable ownership</text>
+  <text x="966" y="358" class="copy">Coalesced repaint</text>
+  <text x="966" y="410" class="small">No target re-parenting</text>
+
+  <path d="M274 300H326" class="arrow"/>
+  <path d="M464 264V296" class="arrow"/>
+  <path d="M582 392H634" class="arrow"/>
+  <path d="M870 300H922" class="arrow"/>
+
+  <rect x="182" y="510" width="836" height="70" rx="18" fill="#111C31" stroke="#334155" stroke-width="2"/>
+  <text x="216" y="540" class="small">Governing invariant</text>
+  <text x="216" y="566" class="copy">Motion clarifies state transitions; it never delays, blocks, reorders, consumes, or alters them.</text>
+</svg>
