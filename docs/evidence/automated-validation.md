@@ -55,3 +55,14 @@ The Windows desktop was locked during the evidence run, so interactive screensho
 - more than one Swing timer implementation.
 
 All checks passed.
+
+## Hosted validation
+
+[GitHub Actions run 30651018811](https://github.com/Myang-print/motionflow/actions/runs/30651018811) passed from commit `7427c3d`:
+
+- Ubuntu package, structure, and test gate: 3m17s;
+- macOS test and configuration gate: 4m38s;
+- Windows test and configuration gate: 14m43s;
+- two-baseline Plugin Verifier gate: 7m42s.
+
+The workflow artifact is retained by GitHub Actions as `motionflow-plugin`; local artifact hashes above remain the reproducible evidence for the exact file stored in this workspace.

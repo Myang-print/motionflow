@@ -8,7 +8,7 @@ Candidate: MotionFlow `0.1.0`
 
 The `0.1.0` source and unsigned GitHub distribution are **engineering-complete release candidates**: the scoped effects, controls, resilience rules, documentation, packaging, and automated compatibility gates are implemented.
 
-JetBrains Marketplace publication is intentionally gated. It requires repository secrets for an author certificate and Marketplace token, a successful hosted CI run, and the remaining interactive accessibility/performance/unload observations. The project does not label those external gates as passed without evidence.
+JetBrains Marketplace publication is intentionally gated. Hosted CI has passed, but publication still requires repository secrets for an author certificate and Marketplace token plus the remaining interactive accessibility/performance/unload observations. The project does not label those external gates as passed without evidence.
 
 ## Gate summary
 
@@ -21,7 +21,7 @@ JetBrains Marketplace publication is intentionally gated. It requires repository
 | Branding and diagrams | Pass | SVG assets rendered headlessly and visually inspected |
 | Diagnostics privacy | Pass | Sanitizer tests and fixed-schema review |
 | Windows interactive visual smoke | Not observed | Desktop was locked during the run |
-| Hosted Windows/macOS/Ubuntu CI | Pending branch push | `.github/workflows/build.yml` |
+| Hosted Windows/macOS/Ubuntu CI | Pass | [GitHub Actions run 30651018811](https://github.com/Myang-print/motionflow/actions/runs/30651018811) |
 | Dynamic unload and 100-editor heap gate | Pending interactive qualification | [Performance evidence](performance.md) |
 | Author signature and Marketplace upload | Pending owner credentials | `.github/workflows/release.yml` |
 
