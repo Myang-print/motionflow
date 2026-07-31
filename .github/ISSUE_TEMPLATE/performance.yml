@@ -1,0 +1,40 @@
+name: Performance report
+description: Report latency, CPU, memory, rendering, or lifecycle regressions.
+title: "performance: "
+labels: [performance, needs-triage]
+body:
+  - type: textarea
+    id: symptom
+    attributes:
+      label: Symptom and impact
+      description: Describe latency, CPU, memory growth, frame drops, or retained overlays.
+    validations:
+      required: true
+  - type: textarea
+    id: comparison
+    attributes:
+      label: Disabled versus enabled comparison
+      description: Provide results from the same IDE/project/environment with MotionFlow disabled and enabled.
+    validations:
+      required: true
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Reproduction workload
+    validations:
+      required: true
+  - type: textarea
+    id: diagnostics
+    attributes:
+      label: MotionFlow diagnostics
+      render: text
+    validations:
+      required: true
+  - type: textarea
+    id: environment
+    attributes:
+      label: Environment
+      description: CPU/RAM/GPU, OS, IDE/JBR, project size, plugins, theme, scale, profile, and Power Save Mode.
+    validations:
+      required: true
+

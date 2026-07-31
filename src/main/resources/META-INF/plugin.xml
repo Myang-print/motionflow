@@ -1,0 +1,14 @@
+<idea-plugin>
+  <id>io.github.myangprint.motionflow</id>
+  <name>MotionFlow</name>
+  <vendor>Haoran</vendor>
+
+  <description><![CDATA[
+    <p>Native, configurable motion effects for IntelliJ Platform IDEs.</p>
+    <p>MotionFlow is being developed with a public-API-first architecture, reduced-motion support, and strict performance budgets.</p>
+  ]]></description>
+
+  <depends>com.intellij.modules.platform</depends>
+  <resource-bundle>messages.MotionFlowBundle</resource-bundle>
+</idea-plugin>
+

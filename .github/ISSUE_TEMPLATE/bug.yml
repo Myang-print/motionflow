@@ -1,0 +1,57 @@
+name: Bug report
+description: Report incorrect behavior, a visual defect, leak, compatibility problem, or failure.
+title: "bug: "
+labels: [bug, needs-triage]
+body:
+  - type: markdown
+    attributes:
+      value: Before posting, disable MotionFlow to confirm the behavior is plugin-related. Review copied diagnostics for anything you do not want to share.
+  - type: textarea
+    id: summary
+    attributes:
+      label: Summary
+      description: What happened, and what did you expect?
+    validations:
+      required: true
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Reproduction steps
+      placeholder: |
+        1. Enable...
+        2. Open...
+        3. Trigger...
+    validations:
+      required: true
+  - type: textarea
+    id: diagnostics
+    attributes:
+      label: MotionFlow diagnostics
+      description: Paste the output of MotionFlow Copy Diagnostics after reviewing it.
+      render: text
+    validations:
+      required: true
+  - type: input
+    id: display
+    attributes:
+      label: Theme and display scale
+      placeholder: Dark, 150%, two monitors at 100%/150%
+    validations:
+      required: true
+  - type: dropdown
+    id: frequency
+    attributes:
+      label: Frequency
+      options: [Always, Often, Sometimes, Once]
+    validations:
+      required: true
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: Checks
+      options:
+        - label: The issue disappears when MotionFlow is disabled.
+          required: true
+        - label: I removed project/file/user information from attachments.
+          required: true
+

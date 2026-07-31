@@ -1,0 +1,39 @@
+name: Feature request
+description: Propose a motion effect, control, accessibility improvement, or engineering capability.
+title: "feature: "
+labels: [enhancement, needs-triage]
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: User problem
+      description: Which state change is hard to follow, and for whom?
+    validations:
+      required: true
+  - type: textarea
+    id: behavior
+    attributes:
+      label: Desired behavior
+      description: Describe the visual feedback and when it starts, retargets, cancels, and ends.
+    validations:
+      required: true
+  - type: textarea
+    id: platform
+    attributes:
+      label: Supported API evidence
+      description: Link official SDK docs/source if you know a public event and painting path. Internal APIs/reflection are not accepted fallbacks.
+  - type: textarea
+    id: accessibility
+    attributes:
+      label: Reduced Motion and accessibility
+      description: What should happen for Reduced Motion, high contrast, and keyboard/screen-reader users?
+    validations:
+      required: true
+  - type: textarea
+    id: performance
+    attributes:
+      label: Performance and failure behavior
+      description: What state is bounded, and how should the effect fail closed?
+    validations:
+      required: true
+
