@@ -1,7 +1,7 @@
 <idea-plugin>
   <id>io.github.myangprint.motionflow</id>
   <name>MotionFlow</name>
-  <vendor url="https://github.com/Myang-print">Haoran</vendor>
+  <vendor url="https://github.com/Myang-print">Myang</vendor>
 
   <description><![CDATA[
     <p>Native, configurable visual motion for IntelliJ Platform IDEs.</p>

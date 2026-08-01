@@ -2,7 +2,7 @@
 
 - Status: Accepted
 - Date: 2026-07-31
-- Decision owners: Haoran / MotionFlow maintainers
+- Decision owners: Myang / MotionFlow maintainers
 
 ## Context
 

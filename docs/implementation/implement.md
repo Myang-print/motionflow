@@ -185,12 +185,17 @@ Dependency: M1 and M2.
 #### M3.1 Caret trail
 
 - Listen through `EditorEventMulticaster.addCaretListener(listener, disposable)` or editor-local `CaretModel` with an editor session disposable.
-- Convert the primary caret's visual position to editor component coordinates after the platform move completes.
-- Render an age-bounded polyline or capsule sequence through a non-interactive painter.
+- Convert the event caret's visual position to editor component coordinates after the platform move completes.
+- Maintain independent origin, sample buffer, generation, immutable visual, and keyed timeline state for each admitted caret. Admit the primary first, cap the editor at eight animated carets, and dispose state on the public caret-removed event.
+- Interpolate each visual trail head from that caret's immediately previous coordinate to the completed platform destination, sample once per shared engine frame, and render a bounded silky ribbon that fades after arrival. New movement resets only the same caret's stale history.
+- Project the vertical caret footprint onto the motion normal so horizontal motion retains caret-height emphasis while vertical motion remains a narrow aligned streak.
+- Expose All carets/Primary only coverage and Soft/Balanced/Clear/Bright visibility choices; default Balanced to All carets + Clear and retain hard alpha/width caps.
+- Keep Speed lines and Rounded ribbon as explicit non-default styles and retain the thinner solid High Contrast fallback.
+- Observe component-local editor focus and render split-pane transitions through a temporary shared-root overlay only when both editors remain showing in the same root pane.
 - Initial maximum: 12 trail samples; Balanced default: 7.
 - Coalesce multiple moves within one engine frame.
-- Requirements: MF-ED-001–006, MF-ED-011–012.
-- Tests: coordinate mapping, scrolling, folding, soft wrap, multi-caret, one-line editors, release during animation, native-caret policy.
+- Requirements: MF-ED-001–006, MF-ED-011–016.
+- Tests: per-caret exact-origin replacement, independent bounded multi-caret admission/removal, per-frame interpolation/fade, projected caret-footprint/taper/gradient geometry, every cardinal and diagonal arrival vector, visibility selection, coordinate mapping, scrolling, folding, soft wrap, one-line editors, split-pane focus re-anchoring, cross-frame rejection, release during animation, native-caret policy.
 
 #### M3.2 Click ripple
 

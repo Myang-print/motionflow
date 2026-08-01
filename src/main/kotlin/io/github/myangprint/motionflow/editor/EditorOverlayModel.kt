@@ -1,15 +1,22 @@
 package io.github.myangprint.motionflow.editor
 
+import io.github.myangprint.motionflow.settings.CaretTrailStyle
 import java.awt.Color
 import java.awt.BasicStroke
 
-data class TrailVisual(
+internal data class TrailVisual(
     val x: Float,
     val y: Float,
     val alpha: Float,
 )
 
-data class RippleVisual(
+internal data class CaretTrailVisual(
+    val id: Long,
+    val points: List<TrailVisual>,
+    val ribbon: CaretTrailRibbon?,
+)
+
+internal data class RippleVisual(
     val id: Int,
     val x: Float,
     val y: Float,
@@ -17,22 +24,24 @@ data class RippleVisual(
     val alpha: Float,
 )
 
-data class PulseVisual(
+internal data class PulseVisual(
     val y: Float,
     val height: Float,
     val alpha: Float,
 )
 
-data class EditorOverlayModel(
-    val trail: List<TrailVisual> = emptyList(),
+internal data class EditorOverlayModel(
+    val trails: List<CaretTrailVisual> = emptyList(),
     val ripples: List<RippleVisual> = emptyList(),
     val pulse: PulseVisual? = null,
     val style: EditorOverlayStyle = EditorOverlayStyle(),
 )
 
-data class EditorOverlayStyle(
+internal data class EditorOverlayStyle(
     val accent: Color = Color.WHITE,
-    val trailStroke: BasicStroke = BasicStroke(2f, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND),
+    val caretTrailStyle: CaretTrailStyle = CaretTrailStyle.SILKY_TRAIL,
+    val highContrast: Boolean = false,
     val rippleStroke: BasicStroke = BasicStroke(1.5f),
     val lineHeight: Float = 16f,
+    val trailWidthScale: Float = 1f,
 )

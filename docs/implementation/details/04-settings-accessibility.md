@@ -17,6 +17,9 @@ data class MotionFlowState(
     var powerSaveBehavior: String = "DISABLE_ALL",
     var caretTrailEnabled: Boolean = true,
     var caretTrailLength: Int = 7,
+    var caretTrailStyle: String = "SILKY_TRAIL",
+    var caretTrailCoverage: String = "ALL_CARETS",
+    var caretTrailVisibility: String = "CLEAR",
     var clickRippleEnabled: Boolean = true,
     var navigationPulseEnabled: Boolean = true,
     var editorContextCueEnabled: Boolean = true,
@@ -36,6 +39,8 @@ Persist enum-like values as stable uppercase IDs, not localized display strings.
 | Duration scale | `0.25..2.00` | `1.00` | Clamp and warn once |
 | Intensity scale | `0.25..1.50` | `1.00` | Clamp and warn once |
 | Trail length | `2..12` | `7` | Clamp and warn once |
+| Trail coverage | `ALL_CARETS`, `PRIMARY_ONLY` | `ALL_CARETS` | Fall back and warn once |
+| Trail visibility | `SOFT`, `BALANCED`, `CLEAR`, `BRIGHT` | `CLEAR` | Fall back and warn once |
 | Frame dim amount | `0.04..0.25` | `0.10` | Clamp and warn once |
 | Navigation jump threshold | `3..50` visual lines | `8` | Clamp and warn once |
 
@@ -69,6 +74,9 @@ MotionFlow
 ├── Preview [Play once] [Pause]
 ├── Editor
 │   ├── [x] Caret trail       Length [7]
+│   │   ├── Style [Silky native trail v]
+│   │   ├── Coverage [All carets (up to 8) v]
+│   │   └── Visibility [Clear v]
 │   ├── [x] Click ripple
 │   └── [x] Navigation pulse
 ├── Workbench
@@ -101,6 +109,8 @@ Avoid writing settings on every slider movement. Preview is local; persisted/liv
 ## 6. Profiles
 
 Profiles are named sets of default values. They are not separate persistent objects in MVP.
+
+Caret-profile defaults are intentional: Subtle uses Primary only + Soft, Balanced uses All carets + Clear, and Expressive uses All carets + Bright. Editing either selector changes the profile to Custom.
 
 When a user selects a profile:
 
@@ -169,9 +179,9 @@ Before release:
 - precedence matrix for enable/reduced/power/high-contrast/capability/degradation;
 - invalid/missing/unknown persisted values;
 - schema migration fixtures;
+- coverage/visibility enum fallback and named-profile defaults;
 - Apply/Cancel/Reset semantics;
 - live runtime policy changes only after Apply;
 - preview disposal and no idle timer;
 - accessible names and keyboard focus order via UI test/manual audit;
 - Reduced Motion cancels active spatial effects within one EDT turn.
-

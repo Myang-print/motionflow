@@ -1,6 +1,6 @@
 package io.github.myangprint.motionflow.settings
 
-const val CURRENT_SCHEMA_VERSION = 1
+const val CURRENT_SCHEMA_VERSION = 4
 
 enum class MotionProfileId {
     SUBTLE,
@@ -15,6 +15,27 @@ enum class PowerSaveBehavior {
     IGNORE,
 }
 
+enum class CaretTrailStyle {
+    SILKY_TRAIL,
+    SPEED_LINES,
+    ROUNDED_RIBBON,
+}
+
+enum class CaretTrailCoverage {
+    ALL_CARETS,
+    PRIMARY_ONLY,
+}
+
+enum class CaretTrailVisibility(
+    val alphaScale: Double,
+    val widthScale: Float,
+) {
+    SOFT(0.78, 0.86f),
+    BALANCED(1.00, 1.00f),
+    CLEAR(1.25, 1.10f),
+    BRIGHT(1.50, 1.20f),
+}
+
 data class MotionFlowState(
     var schemaVersion: Int = CURRENT_SCHEMA_VERSION,
     var enabled: Boolean = true,
@@ -25,6 +46,9 @@ data class MotionFlowState(
     var powerSaveBehavior: String = PowerSaveBehavior.DISABLE_ALL.name,
     var caretTrailEnabled: Boolean = true,
     var caretTrailLength: Int = 7,
+    var caretTrailStyle: String = CaretTrailStyle.SILKY_TRAIL.name,
+    var caretTrailCoverage: String = CaretTrailCoverage.ALL_CARETS.name,
+    var caretTrailVisibility: String = CaretTrailVisibility.CLEAR.name,
     var clickRippleEnabled: Boolean = true,
     var navigationPulseEnabled: Boolean = true,
     var navigationJumpThreshold: Int = 8,
@@ -63,6 +87,19 @@ object MotionStateNormalizer {
             ?: MotionProfileId.BALANCED.also { corrected += "profile" }
         val powerSave = PowerSaveBehavior.entries.firstOrNull { it.name == source.powerSaveBehavior }
             ?: PowerSaveBehavior.DISABLE_ALL.also { corrected += "powerSaveBehavior" }
+        val requestedTrailStyle = CaretTrailStyle.entries.firstOrNull { it.name == source.caretTrailStyle }
+        val caretTrailStyle = when {
+            source.schemaVersion < 3 && requestedTrailStyle == CaretTrailStyle.SPEED_LINES -> {
+                corrected += "caretTrailStyle"
+                CaretTrailStyle.SILKY_TRAIL
+            }
+            requestedTrailStyle != null -> requestedTrailStyle
+            else -> CaretTrailStyle.SILKY_TRAIL.also { corrected += "caretTrailStyle" }
+        }
+        val caretTrailCoverage = CaretTrailCoverage.entries.firstOrNull { it.name == source.caretTrailCoverage }
+            ?: CaretTrailCoverage.ALL_CARETS.also { corrected += "caretTrailCoverage" }
+        val caretTrailVisibility = CaretTrailVisibility.entries.firstOrNull { it.name == source.caretTrailVisibility }
+            ?: CaretTrailVisibility.CLEAR.also { corrected += "caretTrailVisibility" }
         if (source.schemaVersion != CURRENT_SCHEMA_VERSION) corrected += "schemaVersion"
 
         return NormalizedState(
@@ -70,6 +107,9 @@ object MotionStateNormalizer {
                 schemaVersion = CURRENT_SCHEMA_VERSION,
                 profile = profile.name,
                 powerSaveBehavior = powerSave.name,
+                caretTrailStyle = caretTrailStyle.name,
+                caretTrailCoverage = caretTrailCoverage.name,
+                caretTrailVisibility = caretTrailVisibility.name,
                 durationScale = doubleValue("durationScale", source.durationScale, 0.25..2.0, 1.0),
                 intensityScale = doubleValue("intensityScale", source.intensityScale, 0.25..1.5, 1.0),
                 caretTrailLength = intValue("caretTrailLength", source.caretTrailLength, 2..12),
@@ -91,6 +131,8 @@ object MotionStateNormalizer {
             durationScale = 0.75,
             intensityScale = 0.65,
             caretTrailLength = 4,
+            caretTrailCoverage = CaretTrailCoverage.PRIMARY_ONLY.name,
+            caretTrailVisibility = CaretTrailVisibility.SOFT.name,
             inactiveFrameDimEnabled = false,
         )
         MotionProfileId.BALANCED -> MotionFlowState(profile = profile.name)
@@ -99,6 +141,8 @@ object MotionStateNormalizer {
             durationScale = 1.20,
             intensityScale = 1.25,
             caretTrailLength = 10,
+            caretTrailCoverage = CaretTrailCoverage.ALL_CARETS.name,
+            caretTrailVisibility = CaretTrailVisibility.BRIGHT.name,
             inactiveFrameDimEnabled = true,
         )
         MotionProfileId.CUSTOM -> MotionFlowState(profile = profile.name)

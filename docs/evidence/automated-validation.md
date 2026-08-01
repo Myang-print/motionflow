@@ -12,13 +12,13 @@ Toolchain: JetBrains Runtime 21, Gradle 9.5.0, Kotlin 2.2.20
 .\gradlew.bat check verifyPluginProjectConfiguration verifyPluginStructure buildPlugin --no-daemon --no-configuration-cache --console=plain
 ```
 
-Result: **passed** — 14 suites, 38 tests, 0 failures, 0 errors, 0 skipped. The suite covers deterministic easing and timelines, scheduler start/stop, zero-duration fallback, global and per-surface capacity, callback isolation, adaptive degradation, settings normalization, motion policy, editor-event classification, contrast, diagnostics privacy, plugin identity, forbidden architecture mechanisms, documentation links, requirement traceability, release-version consistency, and brand assets.
+Result: **passed** — 19 suites, 66 tests, 0 failures, 0 errors, 0 skipped. The suite covers deterministic easing and timelines, scheduler start/stop, zero-duration fallback, global and per-surface capacity, callback isolation, adaptive degradation, schema-v4 style/coverage/visibility migration, motion policy, editor-event classification, EDT-safe startup and project-expiration behavior, per-caret exact-origin replacement, bounded primary-first eight-caret admission, caret add/remove architecture, frame sampling, travel/fade phases, projected horizontal/vertical/diagonal geometry, rendered gradient/core/vertical-width visibility, focus re-anchor architecture, contrast, diagnostics privacy, plugin identity, forbidden mechanisms, documentation integrity, release-version consistency, and brand assets.
 
 Packaged artifact:
 
-- file: `MotionFlow-0.1.0.zip`
-- size: `199348` bytes
-- SHA-256: `CD3700D5204886093A4D0F8AC6D7E2AB44B274E5EC7A8F9B336DC003C649D92F`
+- file: `MotionFlow-0.2.3.zip`
+- size: `259385` bytes
+- SHA-256: `D18329FDC66FA94E9DB6F59F914184A54BEB84F1F5C3BCF45A91E44FF4875C6C`
 
 ## Plugin Verifier
 
@@ -37,9 +37,9 @@ Plugin Verifier reported no binary incompatibility, internal API, removed API, o
 
 ## Sandbox startup
 
-`runIde` launched a clean IntelliJ IDEA 2025.3.6 sandbox with `io.github.myangprint.motionflow` listed as a required plugin. The sandbox log records MotionFlow as a loaded custom plugin and contains no MotionFlow `PluginException` or error entry for that launch.
+`runIde` previously launched a clean IntelliJ IDEA 2025.3.6 sandbox with `io.github.myangprint.motionflow` listed as a required plugin. The sandbox log recorded MotionFlow `0.1.1` as a loaded custom plugin and contained no MotionFlow startup-thread exception or plugin error for that launch.
 
-The Windows desktop was locked during the evidence run, so interactive screenshot-based effect inspection could not be completed in this run. This limitation is recorded rather than converted into a false pass.
+The user installed the local `0.2.0`, `0.2.1`, `0.2.2`, and `0.2.3` packages into IntelliJ IDEA. They confirmed that 0.2.2 was better and identified its vertical orthogonal-bar geometry, primary-only Alt-click behavior, and low-visibility limitations. After testing the 0.2.3 correction, they judged it better and explicitly approved it for publication. Broader accessibility, scaling, performance, and dynamic-unload cells remain separate qualification work and are not inferred from that visual acceptance.
 
 ## Static architecture checks
 
@@ -58,11 +58,11 @@ All checks passed.
 
 ## Hosted validation
 
-[GitHub Actions run 30651018811](https://github.com/Myang-print/motionflow/actions/runs/30651018811) passed from commit `7427c3d`:
+[GitHub Actions run 30690180931](https://github.com/Myang-print/motionflow/actions/runs/30690180931) passed all four jobs for the exact 0.2.3 implementation commit `26f0424`:
 
-- Ubuntu package, structure, and test gate: 3m17s;
-- macOS test and configuration gate: 4m38s;
-- Windows test and configuration gate: 14m43s;
-- two-baseline Plugin Verifier gate: 7m42s.
+- Ubuntu package, structure, and test gate: 3m57s;
+- macOS test and configuration gate: 2m23s;
+- Windows test and configuration gate: 13m12s;
+- two-baseline Plugin Verifier gate: 12m59s.
 
-The workflow artifact is retained by GitHub Actions as `motionflow-plugin`; local artifact hashes above remain the reproducible evidence for the exact file stored in this workspace.
+This hosted matrix independently confirms the local 0.2.3 test, package, configuration, structure, and compatibility evidence above.

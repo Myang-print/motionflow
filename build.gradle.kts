@@ -29,12 +29,11 @@ intellijPlatform {
 
     pluginConfiguration {
         changeNotes = """
-            <h3>MotionFlow 0.1.0</h3>
+            <h3>MotionFlow 0.2.3</h3>
             <ul>
-              <li>Bounded caret trail, click ripple, and large-navigation pulse.</li>
-              <li>Editor-context, tool-window, and optional inactive-frame cues.</li>
-              <li>Four profiles, Reduced Motion, Power Save behavior, and live settings.</li>
-              <li>One active-only motion clock, failure isolation, and redacted local diagnostics.</li>
+              <li>Fixed vertical trails by projecting the native caret footprint instead of drawing a full-height orthogonal bar.</li>
+              <li>Added independent bounded trails for up to eight carets, with a Primary-only option.</li>
+              <li>Added Soft, Balanced, Clear, and Bright trail visibility choices; Clear is the stronger default.</li>
             </ul>
         """.trimIndent()
         ideaVersion {

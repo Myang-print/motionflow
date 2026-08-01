@@ -38,8 +38,8 @@ Status legend:
 
 | Requirement | Concrete implementation/evidence | Status |
 | --- | --- | --- |
-| MF-ED-001 | `EditorEffectsSession` primary-caret overlay renderer | Implemented |
-| MF-ED-002 | Identity check against `primaryCaret`; bounded single trail model | Implemented |
+| MF-ED-001 | `EditorEffectsSession`; projected vertical-caret footprint in `CaretFlowGeometry`; horizontal/vertical/diagonal thickness tests | Verified |
+| MF-ED-002 | Public add/move/remove caret callbacks; `CaretTrailAdmission`; independent keyed state capped at eight; admission and architecture tests | Verified |
 | MF-ED-003 | Post-event listeners only; no handler replacement/interception architecture scan | Verified |
 | MF-ED-004 | Configured limit clamped to 2–12; `ArrayDeque` age/size expiry | Implemented |
 | MF-ED-005 | Main-editor capability filter, showing/disposed guards, disposable session | Implemented |
@@ -50,6 +50,10 @@ Status legend:
 | MF-ED-010 | Below-threshold negative classifier test | Verified |
 | MF-ED-011 | Logical component coordinates plus `SwingUtilities.convertPoint/convertRectangle` | Implemented |
 | MF-ED-012 | Editor release disposes session/overlay/timelines; interactive churn gate pending | Implemented |
+| MF-ED-013 | `CrossEditorCaretFlow` shared-root overlay, component-local focus lifecycle, geometry and architecture tests | Implemented |
+| MF-ED-014 | `CaretFlowGeometry.trailRibbon`, projected footprint, `CaretTrailPainter`, rendered gradient/core/vertical-width and all-angle geometry tests | Verified |
+| MF-ED-015 | Per-caret `CaretTrailSampleBuffer.startAt`, keyed frame-sampled local motion, cross-editor primary flow, focus re-anchor guards, origin replacement/interpolation tests | Verified |
+| MF-ED-016 | Schema-v4 coverage/visibility selectors, profile defaults, immutable policy mapping, hard painter caps, settings/policy/geometry tests | Verified |
 
 ## Workbench effects
 

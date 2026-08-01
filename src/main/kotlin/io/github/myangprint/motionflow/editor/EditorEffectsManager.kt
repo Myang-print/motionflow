@@ -33,6 +33,8 @@ class EditorEffectsManager : MotionOwner {
     private val sessions = IdentityHashMap<Editor, EditorEffectsSession>()
     private var started = false
     private var runtimeDisposable: Disposable? = null
+    private var focusedSession: EditorEffectsSession? = null
+    private var crossEditorFlow: CrossEditorCaretFlow? = null
 
     fun start() {
         check(SwingUtilities.isEventDispatchThread()) { "Editor effects must start on the EDT" }
@@ -59,6 +61,12 @@ class EditorEffectsManager : MotionOwner {
         val lifecycle = Disposer.newDisposable("MotionFlow editor effects")
         Disposer.register(this, lifecycle)
         runtimeDisposable = lifecycle
+        crossEditorFlow = CrossEditorCaretFlow(
+            parentDisposable = lifecycle,
+            engine = service<MotionEngine>(),
+            initialPolicy = service<MotionPolicyService>().current(),
+            diagnostics = service<DiagnosticsService>(),
+        )
 
         val factory = EditorFactory.getInstance()
         factory.addEditorFactoryListener(
@@ -72,6 +80,14 @@ class EditorEffectsManager : MotionOwner {
             object : CaretListener {
                 override fun caretPositionChanged(event: CaretEvent) {
                     sessions[event.editor]?.onCaretPositionChanged(event)
+                }
+
+                override fun caretAdded(event: CaretEvent) {
+                    sessions[event.editor]?.onCaretAdded(event)
+                }
+
+                override fun caretRemoved(event: CaretEvent) {
+                    sessions[event.editor]?.onCaretRemoved(event)
                 }
             },
             lifecycle,
@@ -98,6 +114,8 @@ class EditorEffectsManager : MotionOwner {
     private fun stopRuntime() {
         val lifecycle = runtimeDisposable ?: return
         runtimeDisposable = null
+        focusedSession = null
+        crossEditorFlow = null
         Disposer.dispose(lifecycle)
         sessions.clear()
     }
@@ -110,14 +128,17 @@ class EditorEffectsManager : MotionOwner {
             engine = service<MotionEngine>(),
             initialPolicy = service<MotionPolicyService>().current(),
             diagnostics = service<DiagnosticsService>(),
+            onFocusGained = ::onEditorFocusGained,
         )
         val lifecycle = runtimeDisposable ?: return
         Disposer.register(lifecycle, session)
         sessions[editor] = session
+        if (session.isFocusOwner()) focusedSession = session
     }
 
     private fun detach(editor: Editor) {
         val session = sessions.remove(editor) ?: return
+        if (focusedSession === session) focusedSession = null
         if (!session.motionDisposed) Disposer.dispose(session)
     }
 
@@ -127,6 +148,29 @@ class EditorEffectsManager : MotionOwner {
             return
         }
         startRuntime()
+        crossEditorFlow?.onPolicyChanged(policy)
         sessions.values.toList().forEach { it.onPolicyChanged(policy) }
+    }
+
+    private fun onEditorFocusGained(target: EditorEffectsSession) {
+        check(SwingUtilities.isEventDispatchThread()) { "Editor focus changes must run on the EDT" }
+        val source = focusedSession
+        if (source === target) return
+        val from = source?.caretAnchor()
+        focusedSession = target
+        target.reanchorLocalTrail()
+        if (from == null) return
+        val lifecycle = runtimeDisposable ?: return
+        SwingUtilities.invokeLater {
+            if (
+                motionDisposed ||
+                runtimeDisposable !== lifecycle ||
+                focusedSession !== target ||
+                !target.isFocusOwner()
+            ) return@invokeLater
+            target.reanchorLocalTrail()
+            val to = target.caretAnchor() ?: return@invokeLater
+            crossEditorFlow?.start(from, to)
+        }
     }
 }

@@ -44,6 +44,68 @@ class SourceArchitectureTest {
     }
 
     @Test
+    fun `MF-F-001 startup marshals effect services to the EDT`() {
+        val startup = mainSource.resolve(
+            "io/github/myangprint/motionflow/startup/MotionFlowStartupActivity.kt",
+        ).readText()
+        assertTrue(startup.contains("ApplicationManager.getApplication().invokeLater"))
+        assertTrue(startup.contains("ModalityState.nonModal()"))
+        assertTrue(startup.contains("isExpired = { project.isDisposed }"))
+    }
+
+    @Test
+    fun `MF-ED-013 split caret flow uses a shared root and local focus listeners`() {
+        val flow = mainSource.resolve(
+            "io/github/myangprint/motionflow/editor/CrossEditorCaretFlow.kt",
+        ).readText()
+        val session = mainSource.resolve(
+            "io/github/myangprint/motionflow/editor/EditorEffectsSession.kt",
+        ).readText()
+        assertTrue(flow.contains("rootPane !== SwingUtilities.getRootPane(to.component)"))
+        assertTrue(flow.contains("target = rootContent"))
+        assertTrue(session.contains("addFocusListener(focusListener)"))
+        assertTrue(session.contains("removeFocusListener(focusListener)"))
+        assertTrue(session.contains("!editor.contentComponent.isFocusOwner"))
+        assertTrue(session.contains("state.samples.startAt(previous, now)"))
+        assertTrue(session.contains("internal fun reanchorLocalTrail()"))
+        assertTrue(managerReanchorsDestinationAfterFocus())
+    }
+
+    @Test
+    fun `MF-ED-014 default silky trail uses projected tapered gradient geometry`() {
+        val geometry = mainSource.resolve(
+            "io/github/myangprint/motionflow/editor/CaretFlowGeometry.kt",
+        ).readText()
+        val painter = mainSource.resolve(
+            "io/github/myangprint/motionflow/editor/CaretTrailPainter.kt",
+        ).readText()
+        val state = mainSource.resolve(
+            "io/github/myangprint/motionflow/settings/MotionFlowState.kt",
+        ).readText()
+        assertTrue(geometry.contains("fun trailRibbon"))
+        assertTrue(painter.contains("LinearGradientPaint"))
+        assertTrue(painter.contains("fun paintSilkyTrail"))
+        assertTrue(painter.contains("graphics.fill(outlinePath(ribbon))"))
+        assertTrue(state.contains("CaretTrailStyle.SILKY_TRAIL.name"))
+    }
+
+    @Test
+    fun `MF-ED-002 multi-caret trails use public lifecycle events and bounded independent channels`() {
+        val manager = mainSource.resolve(
+            "io/github/myangprint/motionflow/editor/EditorEffectsManager.kt",
+        ).readText()
+        val session = mainSource.resolve(
+            "io/github/myangprint/motionflow/editor/EditorEffectsSession.kt",
+        ).readText()
+        assertTrue(manager.contains("override fun caretAdded(event: CaretEvent)"))
+        assertTrue(manager.contains("override fun caretRemoved(event: CaretEvent)"))
+        assertTrue(session.contains("val caret = event.caret"))
+        assertTrue(session.contains("CaretTrailAdmission.select"))
+        assertTrue(session.contains("MAX_ANIMATED_CARETS = 8"))
+        assertTrue(session.contains("\"caret-${'$'}{state.id}\""))
+    }
+
+    @Test
     fun `MF-S-007 MVP has no third party runtime implementation dependency`() {
         val build = root.resolve("build.gradle.kts").readText()
         assertFalse(Regex("(?m)^\\s*(?:implementation|runtimeOnly)\\(").containsMatchIn(build))
@@ -52,5 +114,13 @@ class SourceArchitectureTest {
 
     private fun kotlinSources(directory: Path = mainSource): List<Path> = Files.walk(directory).use { stream ->
         stream.filter { Files.isRegularFile(it) && it.extension == "kt" }.toList()
+    }
+
+    private fun managerReanchorsDestinationAfterFocus(): Boolean {
+        val manager = mainSource.resolve(
+            "io/github/myangprint/motionflow/editor/EditorEffectsManager.kt",
+        ).readText()
+        val deferred = manager.substringAfter("SwingUtilities.invokeLater")
+        return deferred.indexOf("target.reanchorLocalTrail()") in 0 until deferred.indexOf("target.caretAnchor()")
     }
 }
