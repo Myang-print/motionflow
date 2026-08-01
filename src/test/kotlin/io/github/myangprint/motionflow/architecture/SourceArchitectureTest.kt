@@ -44,6 +44,16 @@ class SourceArchitectureTest {
     }
 
     @Test
+    fun `MF-F-001 startup marshals effect services to the EDT`() {
+        val startup = mainSource.resolve(
+            "io/github/myangprint/motionflow/startup/MotionFlowStartupActivity.kt",
+        ).readText()
+        assertTrue(startup.contains("ApplicationManager.getApplication().invokeLater"))
+        assertTrue(startup.contains("ModalityState.nonModal()"))
+        assertTrue(startup.contains("isExpired = { project.isDisposed }"))
+    }
+
+    @Test
     fun `MF-S-007 MVP has no third party runtime implementation dependency`() {
         val build = root.resolve("build.gradle.kts").readText()
         assertFalse(Regex("(?m)^\\s*(?:implementation|runtimeOnly)\\(").containsMatchIn(build))

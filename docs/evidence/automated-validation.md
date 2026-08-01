@@ -12,13 +12,13 @@ Toolchain: JetBrains Runtime 21, Gradle 9.5.0, Kotlin 2.2.20
 .\gradlew.bat check verifyPluginProjectConfiguration verifyPluginStructure buildPlugin --no-daemon --no-configuration-cache --console=plain
 ```
 
-Result: **passed** — 14 suites, 38 tests, 0 failures, 0 errors, 0 skipped. The suite covers deterministic easing and timelines, scheduler start/stop, zero-duration fallback, global and per-surface capacity, callback isolation, adaptive degradation, settings normalization, motion policy, editor-event classification, contrast, diagnostics privacy, plugin identity, forbidden architecture mechanisms, documentation links, requirement traceability, release-version consistency, and brand assets.
+Result: **passed** — 15 suites, 41 tests, 0 failures, 0 errors, 0 skipped. The suite covers deterministic easing and timelines, scheduler start/stop, zero-duration fallback, global and per-surface capacity, callback isolation, adaptive degradation, settings normalization, motion policy, editor-event classification, EDT-safe startup and project-expiration behavior, contrast, diagnostics privacy, plugin identity, forbidden architecture mechanisms, documentation links, requirement traceability, release-version consistency, and brand assets.
 
 Packaged artifact:
 
-- file: `MotionFlow-0.1.0.zip`
-- size: `199348` bytes
-- SHA-256: `CD3700D5204886093A4D0F8AC6D7E2AB44B274E5EC7A8F9B336DC003C649D92F`
+- file: `MotionFlow-0.1.1.zip`
+- size: `201045` bytes
+- SHA-256: `77547D9FEE88EBCC00EF99E1FC253AB866AE1725A28D5BEDFD7FCAE11D73BCF1`
 
 ## Plugin Verifier
 
@@ -37,9 +37,9 @@ Plugin Verifier reported no binary incompatibility, internal API, removed API, o
 
 ## Sandbox startup
 
-`runIde` launched a clean IntelliJ IDEA 2025.3.6 sandbox with `io.github.myangprint.motionflow` listed as a required plugin. The sandbox log records MotionFlow as a loaded custom plugin and contains no MotionFlow `PluginException` or error entry for that launch.
+`runIde` launched a clean IntelliJ IDEA 2025.3.6 sandbox with `io.github.myangprint.motionflow` listed as a required plugin. The sandbox log records MotionFlow `0.1.1` as a loaded custom plugin and contains no MotionFlow startup-thread exception or plugin error for that launch.
 
-The Windows desktop was locked during the evidence run, so interactive screenshot-based effect inspection could not be completed in this run. This limitation is recorded rather than converted into a false pass.
+The user then installed `0.1.1` into IntelliJ IDEA 2025.3.1 and confirmed that the live caret trail was visible. This proves live editor effects started; it is not a substitute for the remaining full visual, accessibility, unload, and resource matrix.
 
 ## Static architecture checks
 

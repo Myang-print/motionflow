@@ -4,6 +4,13 @@ All notable changes to MotionFlow will be documented here. The format follows [K
 
 ## [Unreleased]
 
+## [0.1.1] - 2026-08-01
+
+### Fixed
+
+- Fixed editor and workbench effects failing to start because IntelliJ may invoke post-startup activities on a background thread while MotionFlow's UI services are EDT-confined.
+- Made the deferred startup callback expire safely if its project is disposed before the EDT turn runs.
+
 ## [0.1.0] - 2026-08-01
 
 ### Added
@@ -19,5 +26,6 @@ All notable changes to MotionFlow will be documented here. The format follows [K
 - Added failure isolation, high-contrast simplification, native smooth-caret-era coexistence, privacy sanitization, and architecture guards.
 - Added product branding, diagrams, user documentation, troubleshooting guidance, and release evidence templates.
 
-[Unreleased]: https://github.com/Myang-print/motionflow/compare/v0.1.0...HEAD
+[Unreleased]: https://github.com/Myang-print/motionflow/compare/v0.1.1...HEAD
+[0.1.1]: https://github.com/Myang-print/motionflow/compare/v0.1.0...v0.1.1
 [0.1.0]: https://github.com/Myang-print/motionflow/releases/tag/v0.1.0

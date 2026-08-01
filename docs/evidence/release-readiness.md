@@ -2,11 +2,11 @@
 
 Assessment date: 2026-08-01
 
-Candidate: MotionFlow `0.1.0`
+Candidate: MotionFlow `0.1.1`
 
 ## Decision
 
-The `0.1.0` source and unsigned GitHub distribution are **engineering-complete release candidates**: the scoped effects, controls, resilience rules, documentation, packaging, and automated compatibility gates are implemented.
+The `0.1.1` source and unsigned GitHub distribution are **engineering-complete release candidates**: the scoped effects, controls, resilience rules, documentation, packaging, automated compatibility gates, and EDT-safe live startup fix are implemented.
 
 JetBrains Marketplace publication is intentionally gated. Hosted CI has passed, but publication still requires repository secrets for an author certificate and Marketplace token plus the remaining interactive accessibility/performance/unload observations. The project does not label those external gates as passed without evidence.
 
@@ -20,7 +20,8 @@ JetBrains Marketplace publication is intentionally gated. Hosted CI has passed, 
 | Sandbox plugin load | Pass | [Automated validation](automated-validation.md) |
 | Branding and diagrams | Pass | SVG assets rendered headlessly and visually inspected |
 | Diagnostics privacy | Pass | Sanitizer tests and fixed-schema review |
-| Windows interactive visual smoke | Not observed | Desktop was locked during the run |
+| Windows live caret-trail smoke | Pass | User installed `0.1.1` in IntelliJ IDEA 2025.3.1 and confirmed the trail was visible |
+| Full Windows visual/accessibility matrix | Pending | Follow the manual acceptance procedure below |
 | Hosted Windows/macOS/Ubuntu CI | Pass | [GitHub Actions run 30651018811](https://github.com/Myang-print/motionflow/actions/runs/30651018811) |
 | Dynamic unload and 100-editor heap gate | Pending interactive qualification | [Performance evidence](performance.md) |
 | Author signature and Marketplace upload | Pending owner credentials | `.github/workflows/release.yml` |

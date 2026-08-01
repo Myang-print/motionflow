@@ -15,7 +15,7 @@ The plugin descriptor sets `since-build="253"` and deliberately leaves `until-bu
 
 MotionFlow depends only on `com.intellij.modules.platform`, so its binary package is not tied to Java, Python, JavaScript, or another language plugin. That is an architectural compatibility property, not proof that every product-specific UI has been visually exercised.
 
-`0.1.0` therefore claims the IntelliJ Platform baseline and the two verifier cells above. Product-specific Marketplace compatibility, remote development, Android Studio, Rider frontend behavior, macOS/Linux visual behavior, and mixed-monitor DPI remain unclaimed until their smoke cells are recorded.
+`0.1.1` therefore claims the IntelliJ Platform baseline and the two verifier cells above. Product-specific Marketplace compatibility, remote development, Android Studio, Rider frontend behavior, macOS/Linux visual behavior, and mixed-monitor DPI remain unclaimed until their smoke cells are recorded.
 
 ## CI matrix
 

@@ -29,12 +29,10 @@ intellijPlatform {
 
     pluginConfiguration {
         changeNotes = """
-            <h3>MotionFlow 0.1.0</h3>
+            <h3>MotionFlow 0.1.1</h3>
             <ul>
-              <li>Bounded caret trail, click ripple, and large-navigation pulse.</li>
-              <li>Editor-context, tool-window, and optional inactive-frame cues.</li>
-              <li>Four profiles, Reduced Motion, Power Save behavior, and live settings.</li>
-              <li>One active-only motion clock, failure isolation, and redacted local diagnostics.</li>
+              <li>Fixed live effects failing to start when IntelliJ invokes project startup on a background thread.</li>
+              <li>Startup now marshals effect services to the EDT and expires safely with project disposal.</li>
             </ul>
         """.trimIndent()
         ideaVersion {
