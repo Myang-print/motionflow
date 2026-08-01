@@ -1,0 +1,33 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="420" viewBox="0 0 1200 420" role="img" aria-labelledby="title description">
+  <title id="title">MotionFlow effect families</title>
+  <desc id="description">Three panels illustrate caret trail, click and navigation feedback, and workbench focus cues.</desc>
+  <defs>
+    <linearGradient id="flow" x1="0" y1="0" x2="1" y2="0"><stop stop-color="#43D9AD"/><stop offset="1" stop-color="#6C63FF"/></linearGradient>
+    <style>.bg{fill:#0F172A}.card{fill:#172033;stroke:#334155;stroke-width:2}.title{font:700 20px system-ui,sans-serif;fill:#F8FAFC}.copy{font:400 14px system-ui,sans-serif;fill:#AFC0D8}.code{stroke:#34445E;stroke-width:7;stroke-linecap:round}</style>
+  </defs>
+  <rect class="bg" width="1200" height="420" rx="28"/>
+  <g transform="translate(34 34)">
+    <rect class="card" width="354" height="352" rx="20"/>
+    <text x="26" y="44" class="title">Caret trail</text><text x="26" y="69" class="copy">Spatial continuity without moving the caret</text>
+    <path class="code" d="M28 120H250M28 154H302M28 188H220M28 222H284M28 256H196"/>
+    <path d="M68 274C105 274 114 170 166 170C219 170 225 262 292 244" fill="none" stroke="url(#flow)" stroke-width="7" stroke-linecap="round"/>
+    <circle cx="292" cy="244" r="7" fill="#8B83FF"/>
+  </g>
+  <g transform="translate(423 34)">
+    <rect class="card" width="354" height="352" rx="20"/>
+    <text x="26" y="44" class="title">Click + navigation</text><text x="26" y="69" class="copy">Bounded feedback after completed input</text>
+    <path class="code" d="M28 120H260M28 154H310M28 188H230M28 222H286M28 256H210"/>
+    <rect x="18" y="208" width="318" height="34" rx="8" fill="#43D9AD" opacity="0.14"/>
+    <circle cx="246" cy="154" r="10" fill="#6C63FF" opacity="0.75"/>
+    <circle cx="246" cy="154" r="28" fill="none" stroke="#8B83FF" stroke-width="3" opacity="0.65"/>
+    <circle cx="246" cy="154" r="48" fill="none" stroke="#8B83FF" stroke-width="2" opacity="0.28"/>
+  </g>
+  <g transform="translate(812 34)">
+    <rect class="card" width="354" height="352" rx="20"/>
+    <text x="26" y="44" class="title">Workbench focus</text><text x="26" y="69" class="copy">Editor, tool-window, and optional frame cues</text>
+    <rect x="24" y="104" width="200" height="220" rx="10" fill="#111827" stroke="#43D9AD" stroke-width="3"/>
+    <rect x="238" y="104" width="92" height="220" rx="10" fill="#111827" stroke="#6C63FF" stroke-width="3"/>
+    <rect x="27" y="107" width="5" height="214" rx="3" fill="#43D9AD"/>
+    <path class="code" d="M54 146H190M54 182H170M54 218H200M54 254H154"/>
+  </g>
+</svg>

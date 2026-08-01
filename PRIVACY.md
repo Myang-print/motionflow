@@ -17,11 +17,10 @@ MotionFlow does not:
 
 The plugin stores application-level visual preferences through the IntelliJ Platform settings mechanism.
 
-The **Copy Diagnostics** feature planned for the first release will include plugin/IDE/OS versions, effective settings and capabilities, aggregate bounded performance counters, and sanitized error categories. It is designed to exclude paths, project/file names, document content, user/host names, environment variables, raw stack traces, and persistent identifiers. The user decides whether to share the copied text.
+The **Copy Diagnostics** feature includes plugin/IDE/OS versions, effective settings and capabilities, aggregate bounded performance counters, and sanitized error categories. It excludes paths, project/file names, document content, user/host names, environment variables, raw stack traces, and persistent identifiers. The user decides whether to share the copied text.
 
 ## Future changes
 
 Any future network, telemetry, or personal-data processing capability requires a separate product/privacy review, an update to this document, and explicit user consent before collection. It cannot be added as a silent implementation detail.
 
-Last updated: 2026-07-31.
-
+Last updated: 2026-08-01.

@@ -10,12 +10,12 @@ The stable product promise should be outcome-based—visual continuity and focus
 
 | Effect | Feasibility | Supported path | Decision |
 | --- | --- | --- | --- |
-| Caret trail | High | caret events, editor coordinates, disposable painter | MVP |
-| Click ripple | High | editor mouse events, disposable painter | MVP |
-| Navigation/active-line pulse | High | caret events, visual-line delta, painter | MVP |
-| Selected-editor context cue | High | `FileEditorManagerListener`, selected component painter | MVP |
-| Tool-window focus cue | Medium-high | `ToolWindowManagerListener`, component painter | MVP |
-| Inactive-frame dim overlay | Medium | window focus + glass-pane painter | MVP, off by default |
+| Caret trail | High | caret events, editor coordinates, plugin-owned layered overlay | Implemented |
+| Click ripple | High | editor mouse events, layered overlay | Implemented |
+| Navigation/active-line pulse | High | caret events, visual-line delta, layered overlay | Implemented |
+| Selected-editor context cue | High | `FileEditorManagerListener`, selected component overlay | Implemented |
+| Tool-window focus cue | Medium-high | `ToolWindowManagerListener`, component overlay | Implemented |
+| Inactive-frame dim overlay | Medium | window focus + layered overlay | Implemented, off by default |
 | True moving editor-tab indicator | Medium/unknown | public tabs API must be verified | Time-boxed spike, fallback required |
 | Tree/list selection glide | Medium/unknown | component-specific supported listeners needed | `0.2.x` candidate |
 | Global popup/Search Everywhere reveal | Low | no supported global lifecycle hook identified | Deferred |
@@ -38,7 +38,7 @@ The SDK exposes editor and caret event APIs, including disposable listener regis
 
 ### Painting overlays
 
-`IdeGlassPaneUtil.installPainter` provides a public helper that registers a `Painter` under a `Disposable` in current platform source. Every usage still requires Plugin Verifier across the baseline matrix.
+The implementation spike found that `IdeGlassPaneUtil.installPainter` is annotated `@ApiStatus.Internal` in the 2025.3.6 SDK, so it is not admitted to stable code. MotionFlow instead adds its own input-transparent `JComponent` to the target root pane's standard Swing `JLayeredPane`. It never re-parents the target, replaces its UI delegate, changes its layout, or uses an IntelliJ implementation class. The overlay tracks hierarchy and bounds changes and is removed through the shortest owner disposable.
 
 ### Settings and services
 
@@ -79,8 +79,8 @@ The public-API/no-geometry-mutation architecture is therefore not merely style; 
 
 ## 8. Research spikes before implementation commitment
 
-1. Verify `IdeGlassPaneUtil.installPainter` on minimum/current/latest targets.
-2. Prototype caret coordinate/painter lifecycle in standard and diff editors.
+1. Verify layered-overlay geometry, input transparency, and disposal on minimum/current/latest targets.
+2. Prototype caret coordinate/overlay lifecycle in standard editors; non-main editor kinds remain fail-closed.
 3. Determine native smooth-caret coexistence behavior on 2026.1+ without reading internal settings.
 4. Time-box public editor-tab geometry research and document fallback.
 5. Verify frame-local focus events and overlay exclusion around modal dialogs.

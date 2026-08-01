@@ -1,0 +1,102 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - "v[0-9]+.[0-9]+.[0-9]+"
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    name: Verify and publish release
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v6
+
+      # Preserve enough room for both extracted IntelliJ verification targets.
+      - name: Free disk space for IDE baselines
+        run: |
+          sudo rm -rf /usr/local/lib/android /usr/share/dotnet /opt/ghc /usr/local/.ghcup /opt/hostedtoolcache/CodeQL
+          df -h /
+
+      - name: Set up Java 21
+        uses: actions/setup-java@v5
+        with:
+          distribution: zulu
+          java-version: 21
+
+      - name: Validate Gradle Wrapper
+        uses: gradle/actions/wrapper-validation@v6
+
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@v6
+
+      - name: Require the tag and project version to match
+        shell: bash
+        run: |
+          project_version="$(sed -n 's/^version = //p' gradle.properties)"
+          test "${GITHUB_REF_NAME}" = "v${project_version}"
+
+      - name: Check, verify, and package
+        run: >-
+          ./gradlew
+          check
+          verifyPluginProjectConfiguration
+          verifyPluginStructure
+          verifyPlugin
+          buildPlugin
+          --stacktrace
+
+      - name: Validate Marketplace secret completeness
+        id: marketplace_secrets
+        env:
+          PUBLISH_TOKEN: ${{ secrets.PUBLISH_TOKEN }}
+          CERTIFICATE_CHAIN: ${{ secrets.CERTIFICATE_CHAIN }}
+          PRIVATE_KEY: ${{ secrets.PRIVATE_KEY }}
+          PRIVATE_KEY_PASSWORD: ${{ secrets.PRIVATE_KEY_PASSWORD }}
+        shell: bash
+        run: |
+          present=0
+          for value in "$PUBLISH_TOKEN" "$CERTIFICATE_CHAIN" "$PRIVATE_KEY" "$PRIVATE_KEY_PASSWORD"; do
+            if [[ -n "$value" ]]; then present=$((present + 1)); fi
+          done
+          if [[ "$present" -ne 0 && "$present" -ne 4 ]]; then
+            echo "Marketplace publishing requires all four signing/publishing secrets." >&2
+            exit 1
+          fi
+          if [[ "$present" -eq 4 ]]; then
+            echo "enabled=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "enabled=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Sign and publish to JetBrains Marketplace
+        if: steps.marketplace_secrets.outputs.enabled == 'true'
+        env:
+          PUBLISH_TOKEN: ${{ secrets.PUBLISH_TOKEN }}
+          CERTIFICATE_CHAIN: ${{ secrets.CERTIFICATE_CHAIN }}
+          PRIVATE_KEY: ${{ secrets.PRIVATE_KEY }}
+          PRIVATE_KEY_PASSWORD: ${{ secrets.PRIVATE_KEY_PASSWORD }}
+        run: ./gradlew publishPlugin --stacktrace
+
+      - name: Write SHA-256 checksums
+        shell: bash
+        run: |
+          cd build/distributions
+          sha256sum *.zip > SHA256SUMS
+
+      - name: Create GitHub release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: >-
+          gh release create "${GITHUB_REF_NAME}"
+          build/distributions/*.zip
+          build/distributions/SHA256SUMS
+          --verify-tag
+          --title "MotionFlow ${GITHUB_REF_NAME#v}"
+          --generate-notes

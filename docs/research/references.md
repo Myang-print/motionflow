@@ -28,7 +28,7 @@ Accessed 2026-07-31 unless otherwise stated.
 - [Incompatible API changes 2026](https://plugins.jetbrains.com/docs/intellij/api-changes-list-2026.html) — Java/platform compatibility changes.
 - [IntelliJ IDEA 2025.3.6 release](https://blog.jetbrains.com/idea/2026/06/intellij-idea-2025-3-6/) — latest 2025.3 maintenance baseline used by the default build.
 - [IJPL-226110](https://youtrack.jetbrains.com/issue/IJPL-226110) — known malformed full-line module descriptor in 2025.3.1, supporting the latest-patch build decision.
-- [IntelliJ Platform source: `IdeGlassPaneUtil`](https://github.com/JetBrains/intellij-community/blob/master/platform/platform-api/src/com/intellij/openapi/wm/IdeGlassPaneUtil.java) — public painter installation and disposable ownership.
+- [IntelliJ Platform source: `IdeGlassPaneUtil`](https://github.com/JetBrains/intellij-community/blob/master/platform/platform-api/src/com/intellij/openapi/wm/IdeGlassPaneUtil.java) — implementation-spike reference; the SDK annotation check found `installPainter` internal, so MotionFlow does not use it.
 - [IntelliJ Platform source: `CaretListener`](https://github.com/JetBrains/intellij-community/blob/master/platform/editor-ui-api/src/com/intellij/openapi/editor/event/CaretListener.java) — caret movement lifecycle.
 
 ## Current IDE behavior

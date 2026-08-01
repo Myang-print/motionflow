@@ -133,13 +133,15 @@ Expected stable APIs include:
 - `EditorFactoryListener`, `EditorEventMulticaster`, `CaretListener`, `EditorMouseListener`;
 - `FileEditorManagerListener`;
 - `ToolWindowManagerListener`;
-- `IdeGlassPaneUtil.installPainter`, subject to Plugin Verifier and current API status;
+- JDK/Swing `JLayeredPane`, plugin-owned input-transparent `JComponent`s, and component/hierarchy listeners;
 - application/project services, message bus, `Disposable`/`Disposer`;
 - `PersistentStateComponent` and settings `Configurable` APIs;
 - `PowerSaveMode` and look-and-feel/theme notifications if verified stable;
 - JDK/Swing `Timer`, painting, transforms, and component coordinate helpers.
 
 An API's package name alone is not proof of support. Every introduced IntelliJ symbol must pass Plugin DevKit inspections and Plugin Verifier for the declared matrix.
+
+`IdeGlassPaneUtil.installPainter` is explicitly forbidden: implementation verification found `@ApiStatus.Internal` on the method in the 2025.3.6 SDK. `SurfaceOverlay` is the stable host and may use only standard JDK/Swing types.
 
 Forbidden in stable source and dependencies:
 
@@ -208,4 +210,3 @@ A future modular migration should split `core`/DTOs into shared, surface/UI code
 - resource count returns to baseline after editor/project churn;
 - dynamic unload/reload does not double listener callbacks;
 - every painter is registered under a disposable with a shorter or equal owner lifetime.
-
