@@ -54,6 +54,37 @@ class SourceArchitectureTest {
     }
 
     @Test
+    fun `MF-ED-013 split caret flow uses a shared root and local focus listeners`() {
+        val flow = mainSource.resolve(
+            "io/github/myangprint/motionflow/editor/CrossEditorCaretFlow.kt",
+        ).readText()
+        val session = mainSource.resolve(
+            "io/github/myangprint/motionflow/editor/EditorEffectsSession.kt",
+        ).readText()
+        assertTrue(flow.contains("rootPane !== SwingUtilities.getRootPane(to.component)"))
+        assertTrue(flow.contains("target = rootContent"))
+        assertTrue(session.contains("addFocusListener(focusListener)"))
+        assertTrue(session.contains("removeFocusListener(focusListener)"))
+    }
+
+    @Test
+    fun `MF-ED-014 default speed line uses tapered gradient geometry`() {
+        val geometry = mainSource.resolve(
+            "io/github/myangprint/motionflow/editor/CaretFlowGeometry.kt",
+        ).readText()
+        val painter = mainSource.resolve(
+            "io/github/myangprint/motionflow/editor/CaretTrailPainter.kt",
+        ).readText()
+        val state = mainSource.resolve(
+            "io/github/myangprint/motionflow/settings/MotionFlowState.kt",
+        ).readText()
+        assertTrue(geometry.contains("fun speedLineRibbon"))
+        assertTrue(painter.contains("LinearGradientPaint"))
+        assertTrue(painter.contains("graphics.fill(path)"))
+        assertTrue(state.contains("CaretTrailStyle.SPEED_LINES.name"))
+    }
+
+    @Test
     fun `MF-S-007 MVP has no third party runtime implementation dependency`() {
         val build = root.resolve("build.gradle.kts").readText()
         assertFalse(Regex("(?m)^\\s*(?:implementation|runtimeOnly)\\(").containsMatchIn(build))

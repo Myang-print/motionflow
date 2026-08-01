@@ -186,11 +186,12 @@ Dependency: M1 and M2.
 
 - Listen through `EditorEventMulticaster.addCaretListener(listener, disposable)` or editor-local `CaretModel` with an editor session disposable.
 - Convert the primary caret's visual position to editor component coordinates after the platform move completes.
-- Render an age-bounded polyline or capsule sequence through a non-interactive painter.
+- Render an age-bounded, direction-aware tapered ribbon whose transparent origin strengthens toward a full caret-height leading edge. Keep the former rounded ribbon as an explicit non-default style and retain the thinner solid High Contrast fallback.
+- Observe component-local editor focus and render split-pane transitions through a temporary shared-root overlay only when both editors remain showing in the same root pane.
 - Initial maximum: 12 trail samples; Balanced default: 7.
 - Coalesce multiple moves within one engine frame.
-- Requirements: MF-ED-001–006, MF-ED-011–012.
-- Tests: coordinate mapping, scrolling, folding, soft wrap, multi-caret, one-line editors, release during animation, native-caret policy.
+- Requirements: MF-ED-001–006, MF-ED-011–014.
+- Tests: caret-height/taper/gradient geometry, every cardinal and diagonal arrival vector, coordinate mapping, scrolling, folding, soft wrap, multi-caret, one-line editors, split-pane focus, cross-frame rejection, release during animation, native-caret policy.
 
 #### M3.2 Click ripple
 

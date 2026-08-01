@@ -1,6 +1,6 @@
 package io.github.myangprint.motionflow.settings
 
-const val CURRENT_SCHEMA_VERSION = 1
+const val CURRENT_SCHEMA_VERSION = 2
 
 enum class MotionProfileId {
     SUBTLE,
@@ -15,6 +15,11 @@ enum class PowerSaveBehavior {
     IGNORE,
 }
 
+enum class CaretTrailStyle {
+    SPEED_LINES,
+    ROUNDED_RIBBON,
+}
+
 data class MotionFlowState(
     var schemaVersion: Int = CURRENT_SCHEMA_VERSION,
     var enabled: Boolean = true,
@@ -25,6 +30,7 @@ data class MotionFlowState(
     var powerSaveBehavior: String = PowerSaveBehavior.DISABLE_ALL.name,
     var caretTrailEnabled: Boolean = true,
     var caretTrailLength: Int = 7,
+    var caretTrailStyle: String = CaretTrailStyle.SPEED_LINES.name,
     var clickRippleEnabled: Boolean = true,
     var navigationPulseEnabled: Boolean = true,
     var navigationJumpThreshold: Int = 8,
@@ -63,6 +69,8 @@ object MotionStateNormalizer {
             ?: MotionProfileId.BALANCED.also { corrected += "profile" }
         val powerSave = PowerSaveBehavior.entries.firstOrNull { it.name == source.powerSaveBehavior }
             ?: PowerSaveBehavior.DISABLE_ALL.also { corrected += "powerSaveBehavior" }
+        val caretTrailStyle = CaretTrailStyle.entries.firstOrNull { it.name == source.caretTrailStyle }
+            ?: CaretTrailStyle.SPEED_LINES.also { corrected += "caretTrailStyle" }
         if (source.schemaVersion != CURRENT_SCHEMA_VERSION) corrected += "schemaVersion"
 
         return NormalizedState(
@@ -70,6 +78,7 @@ object MotionStateNormalizer {
                 schemaVersion = CURRENT_SCHEMA_VERSION,
                 profile = profile.name,
                 powerSaveBehavior = powerSave.name,
+                caretTrailStyle = caretTrailStyle.name,
                 durationScale = doubleValue("durationScale", source.durationScale, 0.25..2.0, 1.0),
                 intensityScale = doubleValue("intensityScale", source.intensityScale, 0.25..1.5, 1.0),
                 caretTrailLength = intValue("caretTrailLength", source.caretTrailLength, 2..12),

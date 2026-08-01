@@ -4,6 +4,29 @@ All notable changes to MotionFlow will be documented here. The format follows [K
 
 ## [Unreleased]
 
+## [0.2.1] - 2026-08-01
+
+### Added
+
+- Added a persisted caret-trail style selector. `Speed lines (gradient)` is the default; `Rounded ribbon` preserves the former appearance as an option.
+
+### Changed
+
+- Replaced the default uniform capsule with a direction-aware tapered polygon whose color and alpha strengthen from the transparent origin to the full caret-height leading edge.
+- Made local and cross-pane trail geometry robust for movement from every cardinal side and diagonal quadrant.
+- Replaced the rounded cross-pane proxy caret with a sharp-edged caret cue and removed a redundant repaint request.
+
+## [0.2.0] - 2026-08-01
+
+### Added
+
+- Added a distance-aware caret-flow cue when focus moves between visible Split Right or Split Down editor panes sharing one root pane.
+
+### Changed
+
+- Changed the standard caret trail from a thin line to a lower-alpha ribbon whose thickness follows the current logical caret height.
+- Kept the High Contrast trail as a thinner solid indicator to preserve source readability.
+
 ## [0.1.1] - 2026-08-01
 
 ### Fixed
@@ -26,6 +49,8 @@ All notable changes to MotionFlow will be documented here. The format follows [K
 - Added failure isolation, high-contrast simplification, native smooth-caret-era coexistence, privacy sanitization, and architecture guards.
 - Added product branding, diagrams, user documentation, troubleshooting guidance, and release evidence templates.
 
-[Unreleased]: https://github.com/Myang-print/motionflow/compare/v0.1.1...HEAD
+[Unreleased]: https://github.com/Myang-print/motionflow/compare/v0.2.1...HEAD
+[0.2.1]: https://github.com/Myang-print/motionflow/compare/v0.2.0...v0.2.1
+[0.2.0]: https://github.com/Myang-print/motionflow/compare/v0.1.1...v0.2.0
 [0.1.1]: https://github.com/Myang-print/motionflow/compare/v0.1.0...v0.1.1
 [0.1.0]: https://github.com/Myang-print/motionflow/releases/tag/v0.1.0

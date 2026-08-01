@@ -4,7 +4,7 @@
 
 1. Confirm **Enable MotionFlow** and the individual effect are enabled.
 2. Check Reduced Motion and the selected Power Save Mode behavior.
-3. Use a standard main editor. Consoles, previews, diff editors, one-line editors, and unsupported sessions fail closed in `0.1.0`.
+3. Use a standard main editor. Consoles, previews, diff editors, one-line editors, and unsupported sessions fail closed in `0.2.1`.
 4. Ensure the target component is visible in a normal project frame.
 5. Run **MotionFlow: Copy Diagnostics** and inspect the categorical capability/degradation state.
 
@@ -17,6 +17,14 @@ Restarting the IDE resets session degradation. If it recurs, attach copied diagn
 ## The caret trail conflicts with native smooth caret movement
 
 MotionFlow never changes the IDE's caret settings. On the native smooth-caret platform era it automatically caps the trail to four points and a shorter duration. Disable **Caret trail** if the combined appearance is distracting.
+
+## The caret trail shape is not what I prefer
+
+Open MotionFlow settings and change **Trail style**. **Speed lines (gradient)** is the default tapered form; **Rounded ribbon** restores the full-height capsule form. Intensity controls the peak opacity, while Trail length controls the bounded point history. High Contrast intentionally replaces both translucent styles with a solid square-ended indicator.
+
+## The split-pane caret flow does not appear
+
+Both editor panes must remain visible, belong to the same top-level IDE frame, and use supported standard editors. Enable **Caret trail**, disable Reduced Motion, and click from one editor content area into the other after using Split Right or Split Down. Hidden tab changes and movement between separate IDE windows intentionally fail closed.
 
 ## The project frame remains dimmed
 

@@ -41,6 +41,7 @@ class MotionFlowConfigurable : SearchableConfigurable {
     private lateinit var powerSaveBehavior: JComboBox<PowerSaveBehavior>
     private lateinit var caretTrail: JCheckBox
     private lateinit var caretTrailLength: JSpinner
+    private lateinit var caretTrailStyle: JComboBox<CaretTrailStyle>
     private lateinit var clickRipple: JCheckBox
     private lateinit var navigationPulse: JCheckBox
     private lateinit var navigationThreshold: JSpinner
@@ -117,6 +118,11 @@ class MotionFlowConfigurable : SearchableConfigurable {
         }
         caretTrail = checkBox("settings.caretTrail")
         caretTrailLength = intSpinner(2, 12, 1)
+        caretTrailStyle = JComboBox(CaretTrailStyle.entries.toTypedArray()).apply {
+            accessibleContext.accessibleName = MotionFlowBundle.message("settings.trailStyle")
+            renderer = enumRenderer { value -> MotionFlowBundle.message("settings.trailStyle.${value.name.lowercase()}") }
+            addActionListener(::markCustom)
+        }
         clickRipple = checkBox("settings.clickRipple")
         navigationPulse = checkBox("settings.navigationPulse")
         navigationThreshold = intSpinner(3, 50, 1)
@@ -161,6 +167,7 @@ class MotionFlowConfigurable : SearchableConfigurable {
     private fun editorPanel(): JComponent = section("settings.editor") {
         gridRow("", caretTrail)
         gridRow(MotionFlowBundle.message("settings.trailLength"), caretTrailLength)
+        gridRow(MotionFlowBundle.message("settings.trailStyle"), caretTrailStyle)
         gridRow("", clickRipple)
         gridRow("", navigationPulse)
         gridRow(MotionFlowBundle.message("settings.navigationThreshold"), navigationThreshold)
@@ -235,6 +242,8 @@ class MotionFlowConfigurable : SearchableConfigurable {
                 ?: PowerSaveBehavior.DISABLE_ALL
             caretTrail.isSelected = state.caretTrailEnabled
             caretTrailLength.value = state.caretTrailLength
+            caretTrailStyle.selectedItem = CaretTrailStyle.entries.firstOrNull { it.name == state.caretTrailStyle }
+                ?: CaretTrailStyle.SPEED_LINES
             clickRipple.isSelected = state.clickRippleEnabled
             navigationPulse.isSelected = state.navigationPulseEnabled
             navigationThreshold.value = state.navigationJumpThreshold
@@ -258,6 +267,7 @@ class MotionFlowConfigurable : SearchableConfigurable {
             powerSaveBehavior = (powerSaveBehavior.selectedItem as PowerSaveBehavior).name,
             caretTrailEnabled = caretTrail.isSelected,
             caretTrailLength = (caretTrailLength.value as Number).toInt(),
+            caretTrailStyle = (caretTrailStyle.selectedItem as CaretTrailStyle).name,
             clickRippleEnabled = clickRipple.isSelected,
             navigationPulseEnabled = navigationPulse.isSelected,
             navigationJumpThreshold = (navigationThreshold.value as Number).toInt(),
@@ -284,6 +294,7 @@ class MotionFlowConfigurable : SearchableConfigurable {
         profile.isEnabled = active
         caretTrail.isEnabled = spatial
         caretTrailLength.isEnabled = spatial && caretTrail.isSelected
+        caretTrailStyle.isEnabled = spatial && caretTrail.isSelected
         clickRipple.isEnabled = spatial
         navigationPulse.isEnabled = active
         navigationThreshold.isEnabled = active && navigationPulse.isSelected

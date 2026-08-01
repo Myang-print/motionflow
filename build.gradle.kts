@@ -29,10 +29,11 @@ intellijPlatform {
 
     pluginConfiguration {
         changeNotes = """
-            <h3>MotionFlow 0.1.1</h3>
+            <h3>MotionFlow 0.2.1</h3>
             <ul>
-              <li>Fixed live effects failing to start when IntelliJ invokes project startup on a background thread.</li>
-              <li>Startup now marshals effect services to the EDT and expires safely with project disposal.</li>
+              <li>Changed the default caret trail into a tapered transparent-to-accent speed line.</li>
+              <li>Made split-editor flow geometry direction-aware for horizontal, vertical, and diagonal movement.</li>
+              <li>Added Rounded ribbon as an optional non-default trail style.</li>
             </ul>
         """.trimIndent()
         ideaVersion {

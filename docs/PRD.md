@@ -18,7 +18,7 @@ The product must not inject code, patch IDE files, depend on internal APIs, re-p
 
 The first release focuses on effects that can be implemented with supported platform APIs:
 
-- an editor caret trail that complements, and where appropriate defers to, native smooth-caret behavior;
+- a caret-height editor trail and a focus-flow cue between visible split editor panes, while complementing native smooth-caret behavior;
 - a short editor click ripple and active-line pulse;
 - a moving editor-context indicator when the selected file changes;
 - tool-window focus cues and optional inactive-frame dimming;
@@ -144,7 +144,8 @@ Those product ideas are useful. Its implementation mechanism is not portable bec
 | --- | --- | --- |
 | Core | Shared frame clock, timelines, easing, cancellation, repaint coalescing | On when needed |
 | Policy | Global enable, profiles, reduced motion, Power Save Mode behavior | Balanced profile |
-| Editor | Caret trail | On for 2025.3; capability-aware later |
+| Editor | Gradient speed-line caret trail | On for 2025.3; rounded ribbon optional |
+| Editor | Caret flow between visible split panes | On with the caret-trail setting |
 | Editor | Click ripple | On |
 | Editor | Active-line pulse after large navigation jumps | On |
 | Context | Active-editor transition indicator | On |
@@ -185,7 +186,7 @@ The page contains:
 2. motion profile selector;
 3. reduced-motion switch;
 4. effect groups with individual switches;
-5. intensity, duration scale, and trail length controls;
+5. intensity, duration scale, trail length, and trail-style controls;
 6. Power Save Mode behavior;
 7. diagnostics summary and reset action;
 8. an isolated preview component that demonstrates the current policy without touching the live IDE surface.
@@ -232,7 +233,7 @@ Selecting a named profile replaces the current effective values. Editing a profi
 
 ### 9.3 Editor effects
 
-- **MF-ED-001:** Caret movement events may produce a non-interactive trail rendered over the editor content component.
+- **MF-ED-001:** Caret movement events may produce a non-interactive trail rendered over the editor content component. In standard themes, its thickness follows the current logical caret height; High Contrast may use a thinner solid indicator to preserve readability.
 - **MF-ED-002:** The trail follows the primary caret by default. With multiple carets, the default policy is primary-only; an optional all-carets policy is deferred until performance tests pass.
 - **MF-ED-003:** Typing and caret movement are never delayed or intercepted.
 - **MF-ED-004:** Trail points are bounded by the configured maximum and expire by age; no unbounded history is retained.
@@ -244,6 +245,8 @@ Selecting a named profile replaces the current effective values. Editing a profi
 - **MF-ED-010:** Routine one-character caret movement does not trigger the active-line pulse.
 - **MF-ED-011:** Editor effects adapt to scale changes and HiDPI transforms without storing device-pixel coordinates as logical coordinates.
 - **MF-ED-012:** Editor release immediately disposes its painter, listeners, and timelines.
+- **MF-ED-013:** When focus moves between two showing editor components in the same root pane, MotionFlow may animate a caret-sized, non-interactive flow cue from the previous caret position to the destination. It never moves either platform caret, crosses top-level frames, or runs when the caret trail is disabled by policy.
+- **MF-ED-014:** The default standard-theme trail is a direction-aware speed-line ribbon: it tapers to its origin, uses a transparent-to-accent gradient, reaches the logical caret height at its leading edge, and fades over time. It remains valid for horizontal, vertical, and diagonal arrival vectors. A rounded-ribbon style is user-selectable but not the default; High Contrast keeps its solid fallback.
 
 ### 9.4 Context and workbench effects
 

@@ -38,7 +38,7 @@ Status legend:
 
 | Requirement | Concrete implementation/evidence | Status |
 | --- | --- | --- |
-| MF-ED-001 | `EditorEffectsSession` primary-caret overlay renderer | Implemented |
+| MF-ED-001 | `EditorEffectsSession` caret-height primary-caret renderer; `CaretFlowGeometryTest` thickness boundaries | Verified |
 | MF-ED-002 | Identity check against `primaryCaret`; bounded single trail model | Implemented |
 | MF-ED-003 | Post-event listeners only; no handler replacement/interception architecture scan | Verified |
 | MF-ED-004 | Configured limit clamped to 2–12; `ArrayDeque` age/size expiry | Implemented |
@@ -50,6 +50,8 @@ Status legend:
 | MF-ED-010 | Below-threshold negative classifier test | Verified |
 | MF-ED-011 | Logical component coordinates plus `SwingUtilities.convertPoint/convertRectangle` | Implemented |
 | MF-ED-012 | Editor release disposes session/overlay/timelines; interactive churn gate pending | Implemented |
+| MF-ED-013 | `CrossEditorCaretFlow` shared-root overlay, component-local focus lifecycle, geometry and architecture tests | Implemented |
+| MF-ED-014 | `CaretFlowGeometry.speedLineRibbon`, `CaretTrailPainter`, default/migration setting tests, rendered gradient and all-angle geometry tests | Verified |
 
 ## Workbench effects
 

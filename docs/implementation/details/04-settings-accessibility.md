@@ -17,6 +17,7 @@ data class MotionFlowState(
     var powerSaveBehavior: String = "DISABLE_ALL",
     var caretTrailEnabled: Boolean = true,
     var caretTrailLength: Int = 7,
+    var caretTrailStyle: String = "SPEED_LINES",
     var clickRippleEnabled: Boolean = true,
     var navigationPulseEnabled: Boolean = true,
     var editorContextCueEnabled: Boolean = true,
@@ -69,6 +70,7 @@ MotionFlow
 ├── Preview [Play once] [Pause]
 ├── Editor
 │   ├── [x] Caret trail       Length [7]
+│   │   └── Style [Speed lines (gradient) v]
 │   ├── [x] Click ripple
 │   └── [x] Navigation pulse
 ├── Workbench
@@ -174,4 +176,3 @@ Before release:
 - preview disposal and no idle timer;
 - accessible names and keyboard focus order via UI test/manual audit;
 - Reduced Motion cancels active spatial effects within one EDT turn.
-

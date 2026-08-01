@@ -12,6 +12,7 @@ class MotionStateNormalizerTest {
                 schemaVersion = -1,
                 profile = "UNKNOWN",
                 powerSaveBehavior = "UNKNOWN",
+                caretTrailStyle = "UNKNOWN",
                 durationScale = Double.NaN,
                 intensityScale = 9.0,
                 caretTrailLength = 100,
@@ -22,6 +23,7 @@ class MotionStateNormalizerTest {
         assertEquals(CURRENT_SCHEMA_VERSION, normalized.state.schemaVersion)
         assertEquals(MotionProfileId.BALANCED.name, normalized.state.profile)
         assertEquals(PowerSaveBehavior.DISABLE_ALL.name, normalized.state.powerSaveBehavior)
+        assertEquals(CaretTrailStyle.SPEED_LINES.name, normalized.state.caretTrailStyle)
         assertEquals(1.0, normalized.state.durationScale)
         assertEquals(1.5, normalized.state.intensityScale)
         assertEquals(12, normalized.state.caretTrailLength)
@@ -36,5 +38,6 @@ class MotionStateNormalizerTest {
         assertEquals(1.0, MotionStateNormalizer.defaults(MotionProfileId.BALANCED).durationScale)
         assertEquals(1.20, MotionStateNormalizer.defaults(MotionProfileId.EXPRESSIVE).durationScale)
         assertTrue(MotionStateNormalizer.defaults(MotionProfileId.EXPRESSIVE).inactiveFrameDimEnabled)
+        assertEquals(CaretTrailStyle.SPEED_LINES.name, MotionStateNormalizer.defaults().caretTrailStyle)
     }
 }

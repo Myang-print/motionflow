@@ -19,13 +19,14 @@
 
 MotionFlow observes completed IDE state changes and renders brief, input-transparent cues. The platform remains authoritative: motion never consumes events, moves the caret, changes documents, delays selection, or animates platform-owned layout geometry.
 
-> **Status:** `0.1.1` hotfix candidate. Automated package and compatibility gates pass; interactive qualification and signed Marketplace publication are tracked without overstating them in [release readiness](docs/evidence/release-readiness.md).
+> **Status:** `0.2.1` release candidate. Automated package and compatibility gates are recorded in [release readiness](docs/evidence/release-readiness.md); signed Marketplace publication remains separately gated.
 
 ## Features
 
 | Surface | Visual feedback | Safety behavior |
 | --- | --- | --- |
-| Editor | Bounded caret trail | Primary caret only; never replaces or moves the native caret |
+| Editor | Gradient speed-line trail | Tapers from the caret toward a transparent origin; rounded ribbon remains optional |
+| Split editors | Direction-aware cross-pane caret flow | Shared-root overlay only; supports horizontal, vertical, and diagonal approaches |
 | Editor | Click ripple | Primary-button click only; drag, popup, and right-click are ignored |
 | Editor | Navigation pulse | Triggers only after a configurable large visual-line jump |
 | Editor context | Selected-editor edge cue | No editor-tab traversal or geometry mutation |
@@ -41,7 +42,7 @@ MotionFlow observes completed IDE state changes and renders brief, input-transpa
 
 ### From a GitHub release
 
-1. Download `MotionFlow-0.1.1.zip` from [Releases](https://github.com/Myang-print/motionflow/releases).
+1. Download `MotionFlow-0.2.1.zip` from [Releases](https://github.com/Myang-print/motionflow/releases).
 2. In the IDE, open **Settings | Plugins**.
 3. Select the gear menu, choose **Install Plugin from Disk…**, and select the ZIP.
 
@@ -88,7 +89,7 @@ Release evidence is recorded in [automated validation](docs/evidence/automated-v
 - Toolchain: Java 21, Kotlin, Gradle 9.5.0
 - Dependency: `com.intellij.modules.platform`
 
-The classic plugin is designed for IntelliJ Platform products, but a product is listed as verified only after its Plugin Verifier and smoke-test cell is recorded. Remote development and true tab/layout animations are not advertised in the `0.1.x` line.
+The classic plugin is designed for IntelliJ Platform products, but a product is listed as verified only after its Plugin Verifier and smoke-test cell is recorded. Remote development and true tab/layout animations are not advertised in the `0.2.x` line.
 
 ## Privacy and security
 

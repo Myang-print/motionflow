@@ -21,7 +21,9 @@ Reduced Motion is independent of profiles. It disables the caret trail, click ri
 
 ### Caret trail
 
-The trail follows only the primary caret and stores at most 12 points. MotionFlow does not move or replace the IDE caret. On platforms with native smooth caret behavior, the trail automatically uses a shorter native-aware form.
+The trail follows only the primary caret and stores at most 12 points. The default **Speed lines (gradient)** style is transparent and narrow at its origin, strengthens toward the caret, and reaches the current logical caret height at its leading edge. It adapts to horizontal, vertical, and diagonal movement. Select **Rounded ribbon** under Trail style to use the earlier capsule-shaped appearance. High Contrast always uses a thinner solid form for readability. MotionFlow does not move or replace the IDE caret. On platforms with native smooth caret behavior, the trail automatically uses a shorter native-aware form.
+
+When focus moves between two visible Split Right or Split Down editor panes, the caret-trail setting also enables a distance-aware flow cue across the shared project frame. Its wedge rotates with the actual travel vector, including reverse and diagonal approaches. The native caret appears at the destination immediately; MotionFlow only paints a brief input-transparent cue from the previous caret position. The cue does not run between separate top-level IDE windows or hidden editor tabs.
 
 ### Click ripple
 
