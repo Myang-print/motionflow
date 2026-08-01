@@ -19,6 +19,6 @@ MotionFlow depends only on `com.intellij.modules.platform`, so its binary packag
 
 ## CI matrix
 
-The build workflow runs the full package/structure gate on Ubuntu and adds test/configuration jobs for Windows and macOS. [GitHub Actions run 30651018811](https://github.com/Myang-print/motionflow/actions/runs/30651018811) passed all four jobs from commit `7427c3d`: Linux package/structure checks, macOS tests, Windows tests, and the two-baseline Plugin Verifier.
+The build workflow runs the full package/structure gate on Ubuntu and adds test/configuration jobs for Windows and macOS. [GitHub Actions run 30683101832](https://github.com/Myang-print/motionflow/actions/runs/30683101832) passed all four jobs from the 0.2.1 implementation commit `e1f0960`: Linux package/structure checks, macOS tests, Windows tests, and the two-baseline Plugin Verifier.
 
 The verifier runner explicitly reclaims unrelated Android, .NET, Haskell, and CodeQL SDK space before extracting both IntelliJ baselines. This prevents the general-purpose runner image from exhausting its disk without changing the plugin binary or verifier scope. The exact local 0.2.1 package was independently reverified against both listed builds on 2026-08-01; both verdict files report `Compatible` and probable dynamic enable/disable eligibility.

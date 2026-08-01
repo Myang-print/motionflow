@@ -58,11 +58,11 @@ All checks passed.
 
 ## Hosted validation
 
-[GitHub Actions run 30651018811](https://github.com/Myang-print/motionflow/actions/runs/30651018811) passed from the earlier baseline commit `7427c3d`:
+[GitHub Actions run 30683101832](https://github.com/Myang-print/motionflow/actions/runs/30683101832) passed from the 0.2.1 implementation commit `e1f0960`:
 
-- Ubuntu package, structure, and test gate: 3m17s;
-- macOS test and configuration gate: 4m38s;
-- Windows test and configuration gate: 14m43s;
-- two-baseline Plugin Verifier gate: 7m42s.
+- Ubuntu package, structure, and test gate: 3m25s;
+- macOS test and configuration gate: 1m29s;
+- Windows test and configuration gate: 8m22s;
+- two-baseline Plugin Verifier gate: 8m47s.
 
-That run validates the workflow and earlier baseline, not the unpushed 0.2.1 commit. Local gates and the artifact hash above are the exact evidence for the 0.2.1 file stored in this workspace; hosted validation must rerun after push.
+The workflow artifact is retained by GitHub Actions as `motionflow-plugin`; local gates and the artifact hash above remain the reproducible evidence for the exact 0.2.1 file stored in this workspace.
