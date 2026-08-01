@@ -58,11 +58,11 @@ All checks passed.
 
 ## Hosted validation
 
-[GitHub Actions run 30683585001](https://github.com/Myang-print/motionflow/actions/runs/30683585001) passed for the preceding 0.2.1 branch head `e2498fd`:
+[GitHub Actions run 30686443994](https://github.com/Myang-print/motionflow/actions/runs/30686443994) passed all four jobs for the exact 0.2.2 implementation commit `8623aa4`:
 
-- Ubuntu package, structure, and test gate: 3m30s;
-- macOS test and configuration gate: 1m26s;
-- Windows test and configuration gate: 9m45s;
-- two-baseline Plugin Verifier gate: 7m30s.
+- Ubuntu package, structure, and test gate: 3m19s;
+- macOS test and configuration gate: 2m23s;
+- Windows test and configuration gate: 12m05s;
+- two-baseline Plugin Verifier gate: 8m16s.
 
-That run proves the branch workflow before the 0.2.2 refinement. Local gates and the artifact hash above are the exact evidence for 0.2.2; hosted 0.2.2 validation reruns after push.
+This hosted matrix independently confirms the local test, packaging, and compatibility results recorded above.
