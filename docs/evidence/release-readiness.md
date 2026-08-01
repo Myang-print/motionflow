@@ -23,7 +23,7 @@ JetBrains Marketplace publication is intentionally gated. Hosted CI has passed, 
 | Windows live continuous/origin smoke | Pass for `0.2.2` with refinement findings | User judged 0.2.2 better, marked the PR ready, and supplied vertical/multi-caret/visibility evidence |
 | Exact `0.2.3` projected multi-caret visual smoke | Pending owner observation | Install the exact ZIP above; verify vertical alignment, Alt-click carets, all visibility levels, and Split Right/Down |
 | Full Windows visual/accessibility matrix | Pending | Follow the manual acceptance procedure below |
-| Hosted Windows/macOS/Ubuntu CI | Previous 0.2.2 head passed; `0.2.3` pending push | [GitHub Actions run 30686443994](https://github.com/Myang-print/motionflow/actions/runs/30686443994) |
+| Hosted Windows/macOS/Ubuntu CI | Pass for exact `0.2.3` implementation commit `26f0424` | [GitHub Actions run 30690180931](https://github.com/Myang-print/motionflow/actions/runs/30690180931) |
 | Dynamic unload and 100-editor heap gate | Pending interactive qualification | [Performance evidence](performance.md) |
 | Author signature and Marketplace upload | Pending owner credentials | `.github/workflows/release.yml` |
 
