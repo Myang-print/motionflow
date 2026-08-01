@@ -17,8 +17,8 @@ Result: **passed** — 19 suites, 66 tests, 0 failures, 0 errors, 0 skipped. The
 Packaged artifact:
 
 - file: `MotionFlow-0.2.3.zip`
-- size: `259382` bytes
-- SHA-256: `7BA593D94AC74D6FC6178275F8851AE1CF6541CFEB1457E0A564CBAB47FE2531`
+- size: `259385` bytes
+- SHA-256: `D18329FDC66FA94E9DB6F59F914184A54BEB84F1F5C3BCF45A91E44FF4875C6C`
 
 ## Plugin Verifier
 
@@ -39,7 +39,7 @@ Plugin Verifier reported no binary incompatibility, internal API, removed API, o
 
 `runIde` previously launched a clean IntelliJ IDEA 2025.3.6 sandbox with `io.github.myangprint.motionflow` listed as a required plugin. The sandbox log recorded MotionFlow `0.1.1` as a loaded custom plugin and contained no MotionFlow startup-thread exception or plugin error for that launch.
 
-The user installed the local `0.2.0`, `0.2.1`, and `0.2.2` packages into IntelliJ IDEA. They confirmed that 0.2.2 was better and accepted PR readiness, then identified its vertical orthogonal-bar geometry, primary-only Alt-click behavior, and low-visibility limitations. Those observations are the live defect evidence for `0.2.3`; the exact 0.2.3 projected multi-caret appearance still requires installation of the packaged ZIP and is not represented as an already completed manual observation.
+The user installed the local `0.2.0`, `0.2.1`, `0.2.2`, and `0.2.3` packages into IntelliJ IDEA. They confirmed that 0.2.2 was better and identified its vertical orthogonal-bar geometry, primary-only Alt-click behavior, and low-visibility limitations. After testing the 0.2.3 correction, they judged it better and explicitly approved it for publication. Broader accessibility, scaling, performance, and dynamic-unload cells remain separate qualification work and are not inferred from that visual acceptance.
 
 ## Static architecture checks
 

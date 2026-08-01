@@ -5,7 +5,7 @@
 | Product | MotionFlow |
 | Document version | 1.0 |
 | Status | Approved baseline for implementation |
-| Owner | Haoran |
+| Owner | Myang |
 | Last updated | 2026-07-31 |
 | Target first public release | `0.1.0` |
 | Minimum platform | IntelliJ Platform 2025.3, build `253` |

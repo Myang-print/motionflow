@@ -14,6 +14,7 @@ All notable changes to MotionFlow will be documented here. The format follows [K
 
 ### Changed
 
+- Changed the public plugin vendor, copyright holder, and project-owner display name to Myang.
 - Projected the vertical native-caret footprint onto the motion normal, retaining full caret-height emphasis horizontally while producing a narrow aligned stem vertically.
 - Increased the local trail base peak from `0.66` to `0.72`, with schema-v4 visibility scaling and a hard `0.96` painter cap.
 - Made Subtle use Primary only + Soft and Expressive use All carets + Bright.

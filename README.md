@@ -19,7 +19,7 @@
 
 MotionFlow observes completed IDE state changes and renders brief, input-transparent cues. The platform remains authoritative: motion never consumes events, moves the caret, changes documents, delays selection, or animates platform-owned layout geometry.
 
-> **Status:** `0.2.3` release candidate. Automated package and compatibility gates are recorded in [release readiness](docs/evidence/release-readiness.md); signed Marketplace publication remains separately gated.
+> **Status:** `0.2.3` is approved for release. Automated package and compatibility gates are recorded in [release readiness](docs/evidence/release-readiness.md); signed Marketplace publication remains separately gated.
 
 ## Features
 
