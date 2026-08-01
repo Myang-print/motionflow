@@ -66,13 +66,13 @@ class SourceArchitectureTest {
         assertTrue(session.contains("addFocusListener(focusListener)"))
         assertTrue(session.contains("removeFocusListener(focusListener)"))
         assertTrue(session.contains("!editor.contentComponent.isFocusOwner"))
-        assertTrue(session.contains("trailSamples.startAt(previous, now)"))
+        assertTrue(session.contains("state.samples.startAt(previous, now)"))
         assertTrue(session.contains("internal fun reanchorLocalTrail()"))
         assertTrue(managerReanchorsDestinationAfterFocus())
     }
 
     @Test
-    fun `MF-ED-014 default speed line uses tapered gradient geometry`() {
+    fun `MF-ED-014 default silky trail uses projected tapered gradient geometry`() {
         val geometry = mainSource.resolve(
             "io/github/myangprint/motionflow/editor/CaretFlowGeometry.kt",
         ).readText()
@@ -87,6 +87,22 @@ class SourceArchitectureTest {
         assertTrue(painter.contains("fun paintSilkyTrail"))
         assertTrue(painter.contains("graphics.fill(outlinePath(ribbon))"))
         assertTrue(state.contains("CaretTrailStyle.SILKY_TRAIL.name"))
+    }
+
+    @Test
+    fun `MF-ED-002 multi-caret trails use public lifecycle events and bounded independent channels`() {
+        val manager = mainSource.resolve(
+            "io/github/myangprint/motionflow/editor/EditorEffectsManager.kt",
+        ).readText()
+        val session = mainSource.resolve(
+            "io/github/myangprint/motionflow/editor/EditorEffectsSession.kt",
+        ).readText()
+        assertTrue(manager.contains("override fun caretAdded(event: CaretEvent)"))
+        assertTrue(manager.contains("override fun caretRemoved(event: CaretEvent)"))
+        assertTrue(session.contains("val caret = event.caret"))
+        assertTrue(session.contains("CaretTrailAdmission.select"))
+        assertTrue(session.contains("MAX_ANIMATED_CARETS = 8"))
+        assertTrue(session.contains("\"caret-${'$'}{state.id}\""))
     }
 
     @Test

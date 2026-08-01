@@ -6,6 +6,8 @@ import io.github.myangprint.motionflow.settings.MotionProfileId
 import io.github.myangprint.motionflow.settings.MotionStateNormalizer
 import io.github.myangprint.motionflow.settings.PowerSaveBehavior
 import io.github.myangprint.motionflow.settings.CaretTrailStyle
+import io.github.myangprint.motionflow.settings.CaretTrailCoverage
+import io.github.myangprint.motionflow.settings.CaretTrailVisibility
 import kotlin.math.roundToInt
 
 data class MotionEnvironment(
@@ -28,6 +30,8 @@ data class MotionPolicy(
     val intensityScale: Double,
     val caretTrailLength: Int,
     val caretTrailStyle: CaretTrailStyle,
+    val caretTrailCoverage: CaretTrailCoverage,
+    val caretTrailVisibility: CaretTrailVisibility,
     val navigationJumpThreshold: Int,
     val inactiveFrameDimAmount: Double,
     val effects: Map<EffectType, Boolean>,
@@ -53,6 +57,8 @@ data class MotionPolicy(
             intensityScale = 1.0,
             caretTrailLength = 7,
             caretTrailStyle = CaretTrailStyle.SILKY_TRAIL,
+            caretTrailCoverage = CaretTrailCoverage.ALL_CARETS,
+            caretTrailVisibility = CaretTrailVisibility.CLEAR,
             navigationJumpThreshold = 8,
             inactiveFrameDimAmount = 0.10,
             effects = EffectType.entries.associateWith { false },
@@ -125,6 +131,8 @@ object MotionPolicyResolver {
             intensityScale = state.intensityScale,
             caretTrailLength = state.caretTrailLength,
             caretTrailStyle = CaretTrailStyle.valueOf(state.caretTrailStyle),
+            caretTrailCoverage = CaretTrailCoverage.valueOf(state.caretTrailCoverage),
+            caretTrailVisibility = CaretTrailVisibility.valueOf(state.caretTrailVisibility),
             navigationJumpThreshold = state.navigationJumpThreshold,
             inactiveFrameDimAmount = state.inactiveFrameDimAmount,
             effects = mapOf(

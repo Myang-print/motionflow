@@ -19,13 +19,13 @@
 
 MotionFlow observes completed IDE state changes and renders brief, input-transparent cues. The platform remains authoritative: motion never consumes events, moves the caret, changes documents, delays selection, or animates platform-owned layout geometry.
 
-> **Status:** `0.2.2` release candidate. Automated package and compatibility gates are recorded in [release readiness](docs/evidence/release-readiness.md); signed Marketplace publication remains separately gated.
+> **Status:** `0.2.3` release candidate. Automated package and compatibility gates are recorded in [release readiness](docs/evidence/release-readiness.md); signed Marketplace publication remains separately gated.
 
 ## Features
 
 | Surface | Visual feedback | Safety behavior |
 | --- | --- | --- |
-| Editor | Silky continuous caret trail | Frame-sampled from the immediately previous caret; speed lines and rounded ribbon remain optional |
+| Editor | Silky continuous multi-caret trails | Independent exact-origin paths for up to 8 carets; projected vertical geometry, coverage, visibility, and style controls |
 | Split editors | Direction-aware cross-pane caret flow | Reanchors the destination and samples one source-to-target path across the shared root |
 | Editor | Click ripple | Primary-button click only; drag, popup, and right-click are ignored |
 | Editor | Navigation pulse | Triggers only after a configurable large visual-line jump |
@@ -42,7 +42,7 @@ MotionFlow observes completed IDE state changes and renders brief, input-transpa
 
 ### From a GitHub release
 
-1. Download `MotionFlow-0.2.2.zip` from [Releases](https://github.com/Myang-print/motionflow/releases).
+1. Download `MotionFlow-0.2.3.zip` from [Releases](https://github.com/Myang-print/motionflow/releases).
 2. In the IDE, open **Settings | Plugins**.
 3. Select the gear menu, choose **Install Plugin from Disk…**, and select the ZIP.
 
@@ -74,7 +74,7 @@ See the [user guide](docs/USER_GUIDE.md) and [troubleshooting guide](docs/TROUBL
 
 ![MotionFlow architecture](docs/assets/architecture.svg)
 
-MotionFlow uses supported IntelliJ event APIs and standard JDK/Swing overlays. One application-level `javax.swing.Timer` advances every active timeline and stops when the registry becomes empty. Mutable animation state is EDT-confined and bounded to 64 global timelines, 8 per surface, 12 trail points, 3 ripples per editor, and 512 timing samples.
+MotionFlow uses supported IntelliJ event APIs and standard JDK/Swing overlays. One application-level `javax.swing.Timer` advances every active timeline and stops when the registry becomes empty. Mutable animation state is EDT-confined and bounded to 64 global timelines, 8 per surface/editor, 12 points per trail, 3 ripples per editor, and 512 timing samples.
 
 The implementation deliberately does **not** use CSS/JavaScript injection, reflection, internal APIs, Java agents, IDE-file modification, component re-parenting, UI-delegate replacement, or a process-wide AWT event hook.
 

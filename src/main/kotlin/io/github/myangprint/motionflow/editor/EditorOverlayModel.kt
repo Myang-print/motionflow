@@ -10,6 +10,12 @@ internal data class TrailVisual(
     val alpha: Float,
 )
 
+internal data class CaretTrailVisual(
+    val id: Long,
+    val points: List<TrailVisual>,
+    val ribbon: CaretTrailRibbon?,
+)
+
 internal data class RippleVisual(
     val id: Int,
     val x: Float,
@@ -25,8 +31,7 @@ internal data class PulseVisual(
 )
 
 internal data class EditorOverlayModel(
-    val trail: List<TrailVisual> = emptyList(),
-    val trailRibbon: CaretTrailRibbon? = null,
+    val trails: List<CaretTrailVisual> = emptyList(),
     val ripples: List<RippleVisual> = emptyList(),
     val pulse: PulseVisual? = null,
     val style: EditorOverlayStyle = EditorOverlayStyle(),
@@ -38,4 +43,5 @@ internal data class EditorOverlayStyle(
     val highContrast: Boolean = false,
     val rippleStroke: BasicStroke = BasicStroke(1.5f),
     val lineHeight: Float = 16f,
+    val trailWidthScale: Float = 1f,
 )

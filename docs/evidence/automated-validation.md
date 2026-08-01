@@ -12,13 +12,13 @@ Toolchain: JetBrains Runtime 21, Gradle 9.5.0, Kotlin 2.2.20
 .\gradlew.bat check verifyPluginProjectConfiguration verifyPluginStructure buildPlugin --no-daemon --no-configuration-cache --console=plain
 ```
 
-Result: **passed** — 18 suites, 57 tests, 0 failures, 0 errors, 0 skipped. The suite covers deterministic easing and timelines, scheduler start/stop, zero-duration fallback, global and per-surface capacity, callback isolation, adaptive degradation, schema-v3 style migration, motion policy, editor-event classification, EDT-safe startup and project-expiration behavior, exact previous-caret origin replacement, bounded frame sampling, travel/fade phases, all cardinal/diagonal ribbon geometry, rendered gradient/core visibility, focus re-anchor architecture, contrast, diagnostics privacy, plugin identity, forbidden mechanisms, documentation integrity, release-version consistency, and brand assets.
+Result: **passed** — 19 suites, 66 tests, 0 failures, 0 errors, 0 skipped. The suite covers deterministic easing and timelines, scheduler start/stop, zero-duration fallback, global and per-surface capacity, callback isolation, adaptive degradation, schema-v4 style/coverage/visibility migration, motion policy, editor-event classification, EDT-safe startup and project-expiration behavior, per-caret exact-origin replacement, bounded primary-first eight-caret admission, caret add/remove architecture, frame sampling, travel/fade phases, projected horizontal/vertical/diagonal geometry, rendered gradient/core/vertical-width visibility, focus re-anchor architecture, contrast, diagnostics privacy, plugin identity, forbidden mechanisms, documentation integrity, release-version consistency, and brand assets.
 
 Packaged artifact:
 
-- file: `MotionFlow-0.2.2.zip`
-- size: `243421` bytes
-- SHA-256: `572994B30D31F159F58CC6E1583392F4EF9524B23D49525C3A97C578A55445E4`
+- file: `MotionFlow-0.2.3.zip`
+- size: `259382` bytes
+- SHA-256: `7BA593D94AC74D6FC6178275F8851AE1CF6541CFEB1457E0A564CBAB47FE2531`
 
 ## Plugin Verifier
 
@@ -39,7 +39,7 @@ Plugin Verifier reported no binary incompatibility, internal API, removed API, o
 
 `runIde` previously launched a clean IntelliJ IDEA 2025.3.6 sandbox with `io.github.myangprint.motionflow` listed as a required plugin. The sandbox log recorded MotionFlow `0.1.1` as a loaded custom plugin and contained no MotionFlow startup-thread exception or plugin error for that launch.
 
-The user installed the local `0.2.0` and `0.2.1` packages into IntelliJ IDEA. They confirmed the live caret-height path and then identified the stiff endpoint motion, low visibility, and stale/competing origin defects addressed by `0.2.2`. The exact 0.2.2 silky appearance still requires installation of the packaged ZIP and is not represented as an already completed manual observation.
+The user installed the local `0.2.0`, `0.2.1`, and `0.2.2` packages into IntelliJ IDEA. They confirmed that 0.2.2 was better and accepted PR readiness, then identified its vertical orthogonal-bar geometry, primary-only Alt-click behavior, and low-visibility limitations. Those observations are the live defect evidence for `0.2.3`; the exact 0.2.3 projected multi-caret appearance still requires installation of the packaged ZIP and is not represented as an already completed manual observation.
 
 ## Static architecture checks
 
@@ -58,11 +58,11 @@ All checks passed.
 
 ## Hosted validation
 
-[GitHub Actions run 30686443994](https://github.com/Myang-print/motionflow/actions/runs/30686443994) passed all four jobs for the exact 0.2.2 implementation commit `8623aa4`:
+[GitHub Actions run 30686443994](https://github.com/Myang-print/motionflow/actions/runs/30686443994) passed all four jobs for the preceding 0.2.2 implementation commit `8623aa4`:
 
 - Ubuntu package, structure, and test gate: 3m19s;
 - macOS test and configuration gate: 2m23s;
 - Windows test and configuration gate: 12m05s;
 - two-baseline Plugin Verifier gate: 8m16s.
 
-This hosted matrix independently confirms the local test, packaging, and compatibility results recorded above.
+That run proves the branch workflow before the 0.2.3 refinement. Local gates, the artifact hash, and the two-baseline verifier verdicts above are exact 0.2.3 evidence; hosted 0.2.3 validation reruns after push.

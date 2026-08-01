@@ -81,6 +81,14 @@ class EditorEffectsManager : MotionOwner {
                 override fun caretPositionChanged(event: CaretEvent) {
                     sessions[event.editor]?.onCaretPositionChanged(event)
                 }
+
+                override fun caretAdded(event: CaretEvent) {
+                    sessions[event.editor]?.onCaretAdded(event)
+                }
+
+                override fun caretRemoved(event: CaretEvent) {
+                    sessions[event.editor]?.onCaretRemoved(event)
+                }
             },
             lifecycle,
         )

@@ -62,4 +62,27 @@ class CaretTrailPainterTest {
         }
         assertTrue(visiblePixels > 100, "Silky trail should remain clearly visible without a blur filter")
     }
+
+    @Test
+    fun `MF-ED-014 vertical silky trail does not paint a caret-height orthogonal bar`() {
+        val ribbon = assertNotNull(
+            CaretFlowGeometry.trailRibbon(
+                listOf(Point2D.Float(40f, 10f), Point2D.Float(40f, 100f)),
+                caretHeight = 20f,
+            ),
+        )
+        val image = BufferedImage(80, 120, BufferedImage.TYPE_INT_ARGB)
+        val graphics = image.createGraphics()
+        try {
+            graphics.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON)
+            CaretTrailPainter.paintSilkyTrail(graphics, ribbon, Color(0x4A, 0x8D, 0xFF), 0.90f)
+        } finally {
+            graphics.dispose()
+        }
+
+        val paintedHeadWidth = (0 until image.width).count { x ->
+            Color(image.getRGB(x, 96), true).alpha >= 24
+        }
+        assertTrue(paintedHeadWidth <= 6, "Vertical motion must remain a narrow aligned streak")
+    }
 }

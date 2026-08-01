@@ -10,9 +10,9 @@ Open **Settings | Appearance & Behavior | MotionFlow**. Settings are application
 
 | Profile | Best for | Behavior |
 | --- | --- | --- |
-| Subtle | Minimal distraction | Shorter duration, lower intensity, shorter trail |
-| Balanced | Everyday use | Default timings and stable effects |
-| Expressive | More visible feedback | Longer duration, stronger cues, optional frame dim enabled |
+| Subtle | Minimal distraction | Shorter duration, Primary-only Soft trail |
+| Balanced | Everyday use | All-carets Clear trail with default timings |
+| Expressive | More visible feedback | All-carets Bright trail, longer duration, optional frame dim enabled |
 | Custom | Individual tuning | Selected automatically after changing a profile-controlled value |
 
 Reduced Motion is independent of profiles. It disables the caret trail, click ripple, and inactive-frame dimming. Orientation feedback is removed or converted to an opacity-only cue no longer than 80 ms.
@@ -21,7 +21,9 @@ Reduced Motion is independent of profiles. It disables the caret trail, click ri
 
 ### Caret trail
 
-The trail follows only the primary caret and stores at most 12 samples. The default **Silky native trail** begins at the caret's immediately previous location, follows a smooth frame-sampled visual head to the new location, then fades after arrival. Its transparent tail grows into a caret-height leading edge, while a narrow luminous center curve keeps the effect visible. Select **Speed lines** or **Rounded ribbon** under Trail style for the alternative forms. High Contrast always uses a thinner solid indicator. MotionFlow does not move or replace the IDE caret; the platform move completes first.
+The default **Silky native trail** begins at each admitted caret's immediately previous location, follows a smooth frame-sampled visual head to its new location, then fades after arrival. Horizontal movement retains the caret-height silhouette; vertical movement becomes a narrow aligned stem instead of a perpendicular bar, and diagonals blend between them. A narrow luminous center curve keeps the effect visible. Each trail stores at most 12 samples.
+
+**Caret coverage** selects **All carets (up to 8)** or **Primary caret only**. All carets is the Balanced default; the primary caret is always admitted first and excess secondary carets simply remain native without a MotionFlow trail. **Trail visibility** offers **Soft**, **Balanced**, **Clear**, and **Bright**. Clear is the stronger default. Select **Speed lines** or **Rounded ribbon** under Trail style for alternative forms. High Contrast always uses a thinner solid indicator. MotionFlow does not move or replace any IDE caret; platform movement completes first.
 
 When focus moves between two visible Split Right or Split Down editor panes, the caret-trail setting also enables a distance-aware flow cue across the shared project frame. MotionFlow captures the source editor's last caret, clears any stale destination-local trail, and samples one continuous path to the settled destination. The native caret appears at the destination immediately; the cue does not run between separate top-level IDE windows or hidden editor tabs.
 

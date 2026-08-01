@@ -29,11 +29,11 @@ intellijPlatform {
 
     pluginConfiguration {
         changeNotes = """
-            <h3>MotionFlow 0.2.2</h3>
+            <h3>MotionFlow 0.2.3</h3>
             <ul>
-              <li>Added a frame-sampled silky trail that follows the caret continuously and fades after arrival.</li>
-              <li>Fixed stale and destination-editor origins so every cue begins at the immediately previous caret.</li>
-              <li>Increased trail visibility with a stronger bounded gradient and luminous center core.</li>
+              <li>Fixed vertical trails by projecting the native caret footprint instead of drawing a full-height orthogonal bar.</li>
+              <li>Added independent bounded trails for up to eight carets, with a Primary-only option.</li>
+              <li>Added Soft, Balanced, Clear, and Bright trail visibility choices; Clear is the stronger default.</li>
             </ul>
         """.trimIndent()
         ideaVersion {

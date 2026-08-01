@@ -38,7 +38,7 @@ internal object CaretTrailPainter {
         accent: Color,
         alpha: Float,
     ) {
-        val boundedAlpha = alpha.coerceIn(0f, 0.90f)
+        val boundedAlpha = alpha.coerceIn(0f, 0.96f)
         if (boundedAlpha <= 0f) return
         graphics.paint = LinearGradientPaint(
             ribbon.gradientStart,
@@ -54,7 +54,7 @@ internal object CaretTrailPainter {
         graphics.fill(outlinePath(ribbon))
 
         graphics.stroke = BasicStroke(
-            (ribbon.caretHeight * 0.09f).coerceIn(1.4f, 2.6f),
+            ribbon.coreWidth,
             BasicStroke.CAP_ROUND,
             BasicStroke.JOIN_ROUND,
         )
@@ -79,13 +79,16 @@ internal object CaretTrailPainter {
         caretHeight: Float,
         accent: Color,
         alpha: Float,
+        widthScale: Float = 1f,
     ) {
+        val deltaX = to.x - from.x
+        val deltaY = to.y - from.y
         graphics.stroke = BasicStroke(
-            CaretFlowGeometry.trailThickness(caretHeight),
+            CaretFlowGeometry.projectedTrailThickness(deltaX, deltaY, caretHeight, widthScale),
             BasicStroke.CAP_ROUND,
             BasicStroke.JOIN_ROUND,
         )
-        graphics.color = MotionPalette.withAlpha(accent, alpha.coerceIn(0f, 0.76f).toDouble())
+        graphics.color = MotionPalette.withAlpha(accent, alpha.coerceIn(0f, 0.90f).toDouble())
         graphics.drawLine(from.x.roundToInt(), from.y.roundToInt(), to.x.roundToInt(), to.y.roundToInt())
     }
 

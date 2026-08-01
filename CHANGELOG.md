@@ -4,6 +4,25 @@ All notable changes to MotionFlow will be documented here. The format follows [K
 
 ## [Unreleased]
 
+## [0.2.3] - 2026-08-01
+
+### Added
+
+- Added independent trails for all admitted carets, with primary-first admission and a hard eight-caret editor cap.
+- Added **Caret coverage** choices for All carets or Primary only.
+- Added **Trail visibility** choices: Soft, Balanced, Clear, and Bright; Clear is the stronger Balanced-profile default.
+
+### Changed
+
+- Projected the vertical native-caret footprint onto the motion normal, retaining full caret-height emphasis horizontally while producing a narrow aligned stem vertically.
+- Increased the local trail base peak from `0.66` to `0.72`, with schema-v4 visibility scaling and a hard `0.96` painter cap.
+- Made Subtle use Primary only + Soft and Expressive use All carets + Bright.
+
+### Fixed
+
+- Removed the full-height orthogonal crossbar seen during up/down caret movement.
+- Added public caret add/remove lifecycle handling so Alt-click secondary carets receive independent exact-origin trails and release their state immediately when removed.
+
 ## [0.2.2] - 2026-08-01
 
 ### Added
@@ -66,7 +85,8 @@ All notable changes to MotionFlow will be documented here. The format follows [K
 - Added failure isolation, high-contrast simplification, native smooth-caret-era coexistence, privacy sanitization, and architecture guards.
 - Added product branding, diagrams, user documentation, troubleshooting guidance, and release evidence templates.
 
-[Unreleased]: https://github.com/Myang-print/motionflow/compare/v0.2.2...HEAD
+[Unreleased]: https://github.com/Myang-print/motionflow/compare/v0.2.3...HEAD
+[0.2.3]: https://github.com/Myang-print/motionflow/compare/v0.2.2...v0.2.3
 [0.2.2]: https://github.com/Myang-print/motionflow/compare/v0.2.1...v0.2.2
 [0.2.1]: https://github.com/Myang-print/motionflow/compare/v0.2.0...v0.2.1
 [0.2.0]: https://github.com/Myang-print/motionflow/compare/v0.1.1...v0.2.0

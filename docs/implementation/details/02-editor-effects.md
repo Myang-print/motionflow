@@ -15,7 +15,7 @@ Attach flow:
 3. Create a child disposable associated with the editor.
 4. Install one combined overlay painter on `editor.contentComponent`.
 5. Register caret and mouse listeners under the child disposable.
-6. Store only bounded effect models and last primary-caret visual position.
+6. Store only bounded effect models and up to eight admitted caret states, with the primary admitted first.
 
 Release flow:
 
@@ -37,7 +37,7 @@ Before submitting an effect:
 - compute point after the platform event updates caret state;
 - include scrolling offset through the platform conversion result;
 - clamp or reject points outside the visible rectangle plus small antialias padding;
-- capture line height/caret width from supported editor settings or visual metrics, with safe clamps.
+- derive a safely clamped caret stem width from the logical line height when a public per-caret width is unavailable.
 
 Recompute derived dimensions after font, zoom, theme, or graphics-configuration changes. Do not cache device transforms across monitors.
 
@@ -62,12 +62,13 @@ The painter:
 
 ### 5.1 Input
 
-Use caret position change notifications. The primary caret is the only default source. Ignore a change if:
+Use caret position change notifications plus the public caret-added and caret-removed callbacks. All carets are eligible by default up to a hard cap of eight per editor; Primary only is selectable. Ignore a change if:
 
 - the policy/effect is disabled;
 - Reduced Motion or Power Save policy disables it;
 - the editor is not active/showing;
-- the primary caret cannot be mapped safely;
+- the event caret is outside the selected coverage or bounded admission set;
+- the event caret cannot be mapped safely;
 - the move is induced by disposal or an unsuitable component state;
 - the new point equals the last accepted point within a small epsilon.
 
@@ -87,15 +88,17 @@ data class CaretTrailModel(
 )
 ```
 
-The adapter maintains a bounded deque internally but publishes an immutable compact snapshot. Points expire by maximum age and maximum count. Multiple move events inside one engine frame replace the newest target rather than append unlimited points.
+The adapter maintains one bounded deque and one keyed timeline per admitted caret but publishes one immutable compact editor snapshot. Each caret has an independent exact origin, generation counter, and visual. Points expire by maximum age and maximum count. Multiple move events replace only the same caret's current target rather than append unlimited points. The per-editor admission cap matches the engine's eight-timeline surface cap and the primary caret is always selected first.
 
 ### 5.3 Rendering
 
 Balanced mode defaults to a silky frame-sampled ribbon, not a polygon joining raw caret events. On every accepted move, the adapter discards stale history, records the immediately previous caret as the exact origin, and advances a visual trail head toward the already-completed platform destination during the travel phase of one finite timeline. The shared 16 ms clock contributes bounded intermediate samples; after arrival, a separate fade phase reduces the complete afterimage smoothly to zero.
 
-Bounded centerline samples produce a tapered polygon: its oldest edge converges to the motion origin, its leading edge is perpendicular to the arrival vector and exactly one logical caret height wide, and its paint progresses from transparent accent to the strongest bounded accent at the caret. The Silky painter adds a narrow, high-alpha antialiased center curve for visibility without a blur or shadow filter. Balanced peak alpha is bounded at `0.66` before profile scaling and never exceeds `0.90`.
+Bounded centerline samples produce a tapered polygon: its oldest edge converges to the motion origin and its paint progresses from transparent accent to the strongest bounded accent at the caret. Cross-section thickness is the motion-normal projection of a vertical native-caret silhouette. It reaches logical caret height during horizontal travel, collapses to a clamped 2–4 px caret stem during vertical travel, and blends continuously for diagonals. This removes the full-height horizontal slab that appeared during up/down movement.
 
-The same geometry handles left, right, up, down, and diagonal movement. Consecutive centerline tangents define each polygon edge, so a vertical transition does not collapse and reverse-direction movement does not assume a fixed screen side. The leading edge meets the plugin-owned cross-pane caret cue; inside one editor it terminates beneath the native caret without replacing it.
+The Silky painter adds a narrow, high-alpha antialiased center curve for visibility without a blur or shadow filter. The schema-v4 visibility choices scale bounded trail alpha and width: Soft (`0.78`/`0.86`), Balanced (`1.00`/`1.00`), Clear (`1.25`/`1.10`, default), and Bright (`1.50`/`1.20`). The local base peak is `0.72` before profile and visibility scaling and never exceeds `0.96`; cross-pane alpha never exceeds `0.94`.
+
+The same geometry handles left, right, up, down, and diagonal movement. Consecutive centerline tangents define each polygon edge, so reverse-direction movement does not assume a fixed screen side. The projected footprint prevents vertical trails from becoming orthogonal bars. The leading edge meets the plugin-owned cross-pane caret cue; inside one editor it terminates beneath the native caret without replacing it.
 
 `Silky native trail` is the schema-v3 default persisted style. A schema-v2 `Speed lines` default migrates to Silky once; users may then explicitly choose Speed lines or `Rounded ribbon`, which preserves the earlier caret-height `CAP_ROUND` rendering. High Contrast ignores translucent styles and uses a thinner solid, square-ended indicator. Theme accent/editor foreground provides the base color with bounded alpha.
 
@@ -115,13 +118,17 @@ If testing reveals visual conflict that cannot be detected safely, default the t
 
 ### 5.5 Multiple carets
 
-MVP policy is primary-only. When caret count changes:
+Schema v4 resolves the earlier primary-only deferral with bounded public-API behavior:
 
-- keep only the primary target;
-- clear obsolete points if primary identity changes ambiguously;
-- never iterate and animate unbounded caret sets.
+- `All carets` is the Balanced default; `Primary only` is the lower-activity option and the Subtle-profile default;
+- selection is identity-based, deterministic, primary-first, and capped at eight carets per editor;
+- `caretAdded` initializes that caret at its current mapped coordinate without fabricating a trail;
+- `caretPositionChanged` updates only the event caret and uses a distinct effect-key channel;
+- `caretRemoved` increments its generation, cancels its timeline, clears its samples/visual, and releases the identity mapping immediately;
+- excess secondary carets remain native and simply receive no MotionFlow trail;
+- all buffers remain capped at 12 samples, and adaptive degradation reduces each active visual to four.
 
-An all-carets option requires a separate performance and usability decision.
+The cap makes worst-case editor state and paint work explicit: at most eight trails × 12 points, sharing the existing active-only scheduler and one editor overlay. Navigation pulse remains primary-caret only.
 
 ### 5.6 Split-pane focus flow
 
@@ -198,13 +205,15 @@ Default: support standard text editors; fail closed elsewhere until a test prove
 
 Automated where feasible:
 
-- primary caret moves horizontally/vertically;
+- primary and secondary carets move horizontally/vertically;
+- vertical movement paints a narrow aligned stem rather than a full-height orthogonal bar;
 - a second movement while the first trail is active replaces the visible origin with its exact previous caret;
 - large navigation jump versus typing;
 - folded and soft-wrapped lines;
 - scroll during active trail;
 - editor zoom/font change;
-- multiple carets added/removed;
+- multiple carets added/removed, independent origins, primary-first selection, and eight-caret saturation;
+- All carets/Primary only and Soft/Balanced/Clear/Bright policy changes during active trails;
 - click versus drag/right-click/double-click;
 - release editor during every animation phase;
 - rapid file switch and editor split;

@@ -110,7 +110,7 @@ internal class CrossEditorCaretFlow(
             toY = toCenter.y,
             toHeight = to.caretHeight,
             progress = 0.0,
-            intensityScale = policy.intensityScale,
+            intensityScale = policy.intensityScale * policy.caretTrailVisibility.alphaScale,
         )
         val state = FlowState(
             visual = flowVisual(initialFrame, to.accent, samples.snapshot()),
@@ -147,7 +147,7 @@ internal class CrossEditorCaretFlow(
                     toY = toCenter.y,
                     toHeight = to.caretHeight,
                     progress = value,
-                    intensityScale = policy.intensityScale,
+                    intensityScale = policy.intensityScale * policy.caretTrailVisibility.alphaScale,
                 )
                 current.state.samples.append(
                     Point2D.Float(frame.headX, frame.headY),
@@ -242,6 +242,7 @@ internal class CrossEditorCaretFlow(
                 frame.caretHeight,
                 visual.accent,
                 frame.alpha * 0.72f,
+                policy.caretTrailVisibility.widthScale,
             )
         }
         CaretTrailPainter.paintCaretHead(graphics, head, frame.caretHeight, visual.accent, frame.alpha)
@@ -261,10 +262,12 @@ internal class CrossEditorCaretFlow(
             policy.caretTrailStyle == CaretTrailStyle.SILKY_TRAIL -> CaretFlowGeometry.trailRibbon(
                 samples.map { it.point },
                 frame.caretHeight,
+                policy.caretTrailVisibility.widthScale,
             )
             policy.caretTrailStyle == CaretTrailStyle.SPEED_LINES -> CaretFlowGeometry.trailRibbon(
                 listOf(Point2D.Float(frame.tailX, frame.tailY), Point2D.Float(frame.headX, frame.headY)),
                 frame.caretHeight,
+                policy.caretTrailVisibility.widthScale,
             )
             else -> null
         },

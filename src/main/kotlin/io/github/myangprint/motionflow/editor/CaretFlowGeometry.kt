@@ -2,6 +2,7 @@ package io.github.myangprint.motionflow.editor
 
 import java.awt.geom.Point2D
 import kotlin.math.hypot
+import kotlin.math.abs
 import kotlin.math.pow
 import kotlin.math.roundToInt
 
@@ -22,6 +23,8 @@ internal data class CaretTrailRibbon(
     val headLeft: Point2D.Float,
     val headRight: Point2D.Float,
     val caretHeight: Float,
+    val headThickness: Float,
+    val coreWidth: Float,
 )
 
 internal data class LocalCaretTrailFrame(
@@ -41,6 +44,27 @@ internal object CaretFlowGeometry {
     fun trailThickness(caretHeight: Float, highContrast: Boolean = false): Float {
         val normalized = normalizeCaretHeight(caretHeight)
         return if (highContrast) minOf(normalized, HIGH_CONTRAST_THICKNESS) else normalized
+    }
+
+    /**
+     * Projects a vertical caret silhouette onto the normal of the travel vector.
+     * Horizontal travel keeps the full caret height, vertical travel keeps only
+     * the narrow caret stem, and diagonal travel blends continuously between them.
+     */
+    fun projectedTrailThickness(
+        deltaX: Float,
+        deltaY: Float,
+        caretHeight: Float,
+        widthScale: Float = 1f,
+    ): Float {
+        val normalizedHeight = normalizeCaretHeight(caretHeight)
+        val stemWidth = caretStemWidth(normalizedHeight)
+        val length = hypot(deltaX.toDouble(), deltaY.toDouble()).toFloat()
+        if (length < 0.5f) return stemWidth
+        val normalX = -deltaY / length
+        val normalY = deltaX / length
+        val projected = abs(normalY) * normalizedHeight + abs(normalX) * stemWidth
+        return (projected * widthScale.coerceIn(0.5f, 1.5f)).coerceAtLeast(1f)
     }
 
     fun transitionDurationMillis(distance: Double): Int =
@@ -71,10 +95,15 @@ internal object CaretFlowGeometry {
 
     /**
      * Builds a tapered ribbon around a motion path. The tail converges to the
-     * origin, while the leading edge is exactly one logical caret height wide
-     * and remains perpendicular to the arrival direction.
+     * origin. Its cross-section is the motion-normal projection of the native
+     * vertical caret footprint, preventing a full-height horizontal bar during
+     * vertical movement while retaining caret-height emphasis horizontally.
      */
-    fun trailRibbon(points: List<Point2D.Float>, caretHeight: Float): CaretTrailRibbon? {
+    fun trailRibbon(
+        points: List<Point2D.Float>,
+        caretHeight: Float,
+        widthScale: Float = 1f,
+    ): CaretTrailRibbon? {
         val accepted = ArrayList<Point2D.Float>(points.size)
         points.forEach { point ->
             val previous = accepted.lastOrNull()
@@ -84,7 +113,7 @@ internal object CaretFlowGeometry {
         }
         if (accepted.size < 2) return null
 
-        val halfHeight = normalizeCaretHeight(caretHeight) / 2f
+        val normalizedHeight = normalizeCaretHeight(caretHeight)
         val left = ArrayList<Point2D.Float>(accepted.size)
         val right = ArrayList<Point2D.Float>(accepted.size)
         accepted.indices.forEach { index ->
@@ -98,8 +127,9 @@ internal object CaretFlowGeometry {
             val normalX = -deltaY / length
             val normalY = deltaX / length
             val spatialProgress = index.toDouble() / accepted.lastIndex.toDouble()
-            val widthScale = spatialProgress.pow(RIBBON_TAPER_EXPONENT).toFloat()
-            val offset = halfHeight * widthScale
+            val taperScale = spatialProgress.pow(RIBBON_TAPER_EXPONENT).toFloat()
+            val projectedThickness = projectedTrailThickness(deltaX, deltaY, normalizedHeight, widthScale)
+            val offset = projectedThickness / 2f * taperScale
             val center = accepted[index]
             left += Point2D.Float(center.x + normalX * offset, center.y + normalY * offset)
             right += Point2D.Float(center.x - normalX * offset, center.y - normalY * offset)
@@ -115,7 +145,15 @@ internal object CaretFlowGeometry {
             gradientEnd = accepted.last(),
             headLeft = left.last(),
             headRight = right.last(),
-            caretHeight = normalizeCaretHeight(caretHeight),
+            caretHeight = normalizedHeight,
+            headThickness = projectedTrailThickness(
+                accepted.last().x - accepted[accepted.lastIndex - 1].x,
+                accepted.last().y - accepted[accepted.lastIndex - 1].y,
+                normalizedHeight,
+                widthScale,
+            ),
+            coreWidth = (caretStemWidth(normalizedHeight) * 0.72f * widthScale.coerceIn(0.5f, 1.5f))
+                .coerceIn(1.4f, 3.6f),
         )
     }
 
@@ -139,13 +177,15 @@ internal object CaretFlowGeometry {
             tailX = lerp(fromX, toX, tailProgress),
             tailY = lerp(fromY, toY, tailProgress),
             caretHeight = lerp(normalizeCaretHeight(fromHeight), normalizeCaretHeight(toHeight), headProgress),
-            alpha = (0.58 * intensityScale.coerceIn(0.0, 2.0) * entryFade * exitFade)
+            alpha = (0.62 * intensityScale.coerceIn(0.0, 2.25) * entryFade * exitFade)
                 .toFloat()
-                .coerceIn(0f, 0.88f),
+                .coerceIn(0f, 0.94f),
         )
     }
 
     private fun lerp(from: Float, to: Float, progress: Float): Float = from + (to - from) * progress
+
+    private fun caretStemWidth(caretHeight: Float): Float = (caretHeight * 0.14f).coerceIn(2f, 4f)
 
     private const val RIBBON_TAPER_EXPONENT = 0.72
     private const val LOCAL_TRAVEL_FRACTION = 0.62f

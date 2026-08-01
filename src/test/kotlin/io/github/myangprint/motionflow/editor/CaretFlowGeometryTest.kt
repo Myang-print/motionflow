@@ -48,7 +48,7 @@ class CaretFlowGeometryTest {
     }
 
     @Test
-    fun `MF-ED-014 speed line tapers to its origin and meets the caret at full height`() {
+    fun `MF-ED-014 horizontal trail tapers to its origin and meets the caret at full height`() {
         val ribbon = assertNotNull(
             CaretFlowGeometry.trailRibbon(
                 listOf(Point2D.Float(10f, 20f), Point2D.Float(110f, 20f)),
@@ -59,11 +59,39 @@ class CaretFlowGeometryTest {
         assertEquals(ribbon.gradientStart, ribbon.outline.first())
         assertEquals(ribbon.gradientStart, ribbon.outline.last())
         assertEquals(20.0, ribbon.headLeft.distance(ribbon.headRight), 0.001)
+        assertEquals(20f, ribbon.headThickness)
         assertTrue(abs(signedArea(ribbon.outline)) > 100.0)
     }
 
     @Test
-    fun `MF-ED-013 speed line stays nondegenerate from every side and diagonal`() {
+    fun `MF-ED-014 vertical trail projects to a narrow caret stem instead of an orthogonal bar`() {
+        val horizontal = assertNotNull(
+            CaretFlowGeometry.trailRibbon(
+                listOf(Point2D.Float(0f, 0f), Point2D.Float(100f, 0f)),
+                caretHeight = 20f,
+            ),
+        )
+        val vertical = assertNotNull(
+            CaretFlowGeometry.trailRibbon(
+                listOf(Point2D.Float(0f, 0f), Point2D.Float(0f, 100f)),
+                caretHeight = 20f,
+            ),
+        )
+        val diagonal = assertNotNull(
+            CaretFlowGeometry.trailRibbon(
+                listOf(Point2D.Float(0f, 0f), Point2D.Float(100f, 100f)),
+                caretHeight = 20f,
+            ),
+        )
+
+        assertEquals(20f, horizontal.headThickness)
+        assertTrue(vertical.headThickness in 2f..4f)
+        assertTrue(diagonal.headThickness in vertical.headThickness..horizontal.headThickness)
+        assertEquals(vertical.headThickness.toDouble(), vertical.headLeft.distance(vertical.headRight), 0.001)
+    }
+
+    @Test
+    fun `MF-ED-013 projected trail stays nondegenerate from every side and diagonal`() {
         val destinations = listOf(
             Point2D.Float(100f, 0f),
             Point2D.Float(-100f, 0f),
@@ -82,12 +110,23 @@ class CaretFlowGeometryTest {
                     caretHeight = 18f,
                 ),
             )
-            assertEquals(18.0, hypot(
+            assertEquals(ribbon.headThickness.toDouble(), hypot(
                 (ribbon.headRight.x - ribbon.headLeft.x).toDouble(),
                 (ribbon.headRight.y - ribbon.headLeft.y).toDouble(),
             ), 0.001)
+            assertTrue(ribbon.headThickness in 2f..18f)
             assertTrue(abs(signedArea(ribbon.outline)) > 10.0, "Degenerate ribbon toward $destination")
         }
+    }
+
+    @Test
+    fun `MF-ED-016 visibility width choices scale projected geometry monotonically`() {
+        val soft = CaretFlowGeometry.projectedTrailThickness(100f, 0f, 20f, 0.86f)
+        val clear = CaretFlowGeometry.projectedTrailThickness(100f, 0f, 20f, 1.10f)
+        val bright = CaretFlowGeometry.projectedTrailThickness(100f, 0f, 20f, 1.20f)
+
+        assertTrue(soft < clear)
+        assertTrue(clear < bright)
     }
 
     @Test

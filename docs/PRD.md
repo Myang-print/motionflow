@@ -144,7 +144,7 @@ Those product ideas are useful. Its implementation mechanism is not portable bec
 | --- | --- | --- |
 | Core | Shared frame clock, timelines, easing, cancellation, repaint coalescing | On when needed |
 | Policy | Global enable, profiles, reduced motion, Power Save Mode behavior | Balanced profile |
-| Editor | Silky frame-sampled caret trail | On for 2025.3; speed-line/rounded styles optional |
+| Editor | Silky frame-sampled caret trails | On for all carets up to the per-editor cap; primary-only and alternative styles remain selectable |
 | Editor | Caret flow between visible split panes | On with the caret-trail setting |
 | Editor | Click ripple | On |
 | Editor | Active-line pulse after large navigation jumps | On |
@@ -157,7 +157,7 @@ Those product ideas are useful. Its implementation mechanism is not portable bec
 ### 7.2 `0.2.x` beta expansion
 
 - remote-development frontend validation and packaging decision;
-- multi-caret rendering policy and richer theme-derived palettes;
+- richer theme-derived palettes;
 - per-effect custom timing and color controls;
 - optional local performance HUD for developers;
 - safe tree/list selection cues if public component events prove robust across products.
@@ -186,7 +186,7 @@ The page contains:
 2. motion profile selector;
 3. reduced-motion switch;
 4. effect groups with individual switches;
-5. intensity, duration scale, trail length, and trail-style controls;
+5. intensity, duration scale, trail length, trail style, caret coverage, and trail visibility controls;
 6. Power Save Mode behavior;
 7. diagnostics summary and reset action;
 8. an isolated preview component that demonstrates the current policy without touching the live IDE surface.
@@ -233,8 +233,8 @@ Selecting a named profile replaces the current effective values. Editing a profi
 
 ### 9.3 Editor effects
 
-- **MF-ED-001:** Caret movement events may produce a non-interactive trail rendered over the editor content component. In standard themes, its thickness follows the current logical caret height; High Contrast may use a thinner solid indicator to preserve readability.
-- **MF-ED-002:** The trail follows the primary caret by default. With multiple carets, the default policy is primary-only; an optional all-carets policy is deferred until performance tests pass.
+- **MF-ED-001:** Caret movement events may produce a non-interactive trail rendered over the editor content component. In standard themes, horizontal travel uses the current logical caret height while other angles use the motion-normal projection of the native vertical caret footprint; vertical travel therefore remains a narrow aligned stem. High Contrast may use a thinner solid indicator to preserve readability.
+- **MF-ED-002:** The default all-carets policy gives every admitted caret independent bounded origin, sample, visual, and timeline state. The primary caret is admitted first, total animated carets are capped at eight per editor, and excess secondary carets fail closed. Add/remove events initialize or dispose the corresponding state immediately. A primary-only policy remains selectable.
 - **MF-ED-003:** Typing and caret movement are never delayed or intercepted.
 - **MF-ED-004:** Trail points are bounded by the configured maximum and expire by age; no unbounded history is retained.
 - **MF-ED-005:** The trail is clipped to the visible editor viewport and hidden when the editor is not showing, disposed, in a password field, or unsuitable for coordinate mapping.
@@ -246,8 +246,9 @@ Selecting a named profile replaces the current effective values. Editing a profi
 - **MF-ED-011:** Editor effects adapt to scale changes and HiDPI transforms without storing device-pixel coordinates as logical coordinates.
 - **MF-ED-012:** Editor release immediately disposes its painter, listeners, and timelines.
 - **MF-ED-013:** When focus moves between two showing editor components in the same root pane, MotionFlow may animate a caret-sized, non-interactive flow cue from the previous caret position to the destination. It never moves either platform caret, crosses top-level frames, or runs when the caret trail is disabled by policy.
-- **MF-ED-014:** Standard-theme trail geometry tapers to its origin, uses a transparent-to-accent gradient, reaches the logical caret height at its leading edge, and remains valid for horizontal, vertical, and diagonal arrival vectors. The default Silky style adds a bounded high-visibility center core; Speed lines and Rounded ribbon remain user-selectable alternatives. High Contrast keeps its solid fallback.
-- **MF-ED-015:** Every local trail starts at the immediately previous accepted primary-caret coordinate, advances through bounded per-frame interpolated samples, settles at the current caret, and fades after arrival. A new movement replaces stale history. During cross-editor focus changes, the destination local trail is suppressed/re-anchored so exactly one shared-root cue begins at the source editor's last caret coordinate.
+- **MF-ED-014:** Standard-theme trail geometry tapers to its origin, uses a transparent-to-accent gradient, and remains valid for horizontal, vertical, and diagonal arrival vectors. Its leading cross-section equals the motion-normal projection of a vertical caret silhouette, avoiding a full-height orthogonal bar during vertical travel. The default Silky style adds a bounded high-visibility center core; Speed lines and Rounded ribbon remain user-selectable alternatives. High Contrast keeps its solid fallback.
+- **MF-ED-015:** Every local trail starts at the immediately previous accepted coordinate of the same caret, advances through bounded per-frame interpolated samples, settles at that caret's current coordinate, and fades after arrival. A new movement replaces only that caret's stale history. During cross-editor focus changes, destination local trails are suppressed/re-anchored so exactly one shared-root cue begins at the source editor's last primary-caret coordinate.
+- **MF-ED-016:** The user can select caret coverage (`All carets`, capped at eight, or `Primary only`) and trail visibility (`Soft`, `Balanced`, `Clear`, or `Bright`). Balanced profile defaults to All carets and Clear. Visibility scales only bounded trail alpha/width, applies live, preserves High Contrast simplification, and cannot exceed painter alpha caps.
 
 ### 9.4 Context and workbench effects
 
