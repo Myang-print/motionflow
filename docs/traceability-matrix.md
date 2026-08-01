@@ -51,7 +51,8 @@ Status legend:
 | MF-ED-011 | Logical component coordinates plus `SwingUtilities.convertPoint/convertRectangle` | Implemented |
 | MF-ED-012 | Editor release disposes session/overlay/timelines; interactive churn gate pending | Implemented |
 | MF-ED-013 | `CrossEditorCaretFlow` shared-root overlay, component-local focus lifecycle, geometry and architecture tests | Implemented |
-| MF-ED-014 | `CaretFlowGeometry.speedLineRibbon`, `CaretTrailPainter`, default/migration setting tests, rendered gradient and all-angle geometry tests | Verified |
+| MF-ED-014 | `CaretFlowGeometry.trailRibbon`, `CaretTrailPainter`, rendered gradient/core and all-angle geometry tests | Verified |
+| MF-ED-015 | `CaretTrailSampleBuffer.startAt`, frame-sampled local/cross-editor motion, focus re-anchor guards, origin replacement/interpolation/migration tests | Verified |
 
 ## Workbench effects
 

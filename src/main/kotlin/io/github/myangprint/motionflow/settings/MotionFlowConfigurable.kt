@@ -243,7 +243,7 @@ class MotionFlowConfigurable : SearchableConfigurable {
             caretTrail.isSelected = state.caretTrailEnabled
             caretTrailLength.value = state.caretTrailLength
             caretTrailStyle.selectedItem = CaretTrailStyle.entries.firstOrNull { it.name == state.caretTrailStyle }
-                ?: CaretTrailStyle.SPEED_LINES
+                ?: CaretTrailStyle.SILKY_TRAIL
             clickRipple.isSelected = state.clickRippleEnabled
             navigationPulse.isSelected = state.navigationPulseEnabled
             navigationThreshold.value = state.navigationJumpThreshold

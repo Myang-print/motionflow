@@ -29,11 +29,11 @@ intellijPlatform {
 
     pluginConfiguration {
         changeNotes = """
-            <h3>MotionFlow 0.2.1</h3>
+            <h3>MotionFlow 0.2.2</h3>
             <ul>
-              <li>Changed the default caret trail into a tapered transparent-to-accent speed line.</li>
-              <li>Made split-editor flow geometry direction-aware for horizontal, vertical, and diagonal movement.</li>
-              <li>Added Rounded ribbon as an optional non-default trail style.</li>
+              <li>Added a frame-sampled silky trail that follows the caret continuously and fades after arrival.</li>
+              <li>Fixed stale and destination-editor origins so every cue begins at the immediately previous caret.</li>
+              <li>Increased trail visibility with a stronger bounded gradient and luminous center core.</li>
             </ul>
         """.trimIndent()
         ideaVersion {

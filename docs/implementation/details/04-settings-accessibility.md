@@ -17,7 +17,7 @@ data class MotionFlowState(
     var powerSaveBehavior: String = "DISABLE_ALL",
     var caretTrailEnabled: Boolean = true,
     var caretTrailLength: Int = 7,
-    var caretTrailStyle: String = "SPEED_LINES",
+    var caretTrailStyle: String = "SILKY_TRAIL",
     var clickRippleEnabled: Boolean = true,
     var navigationPulseEnabled: Boolean = true,
     var editorContextCueEnabled: Boolean = true,
@@ -70,7 +70,7 @@ MotionFlow
 ├── Preview [Play once] [Pause]
 ├── Editor
 │   ├── [x] Caret trail       Length [7]
-│   │   └── Style [Speed lines (gradient) v]
+│   │   └── Style [Silky native trail v]
 │   ├── [x] Click ripple
 │   └── [x] Navigation pulse
 ├── Workbench

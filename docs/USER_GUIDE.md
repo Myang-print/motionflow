@@ -21,9 +21,9 @@ Reduced Motion is independent of profiles. It disables the caret trail, click ri
 
 ### Caret trail
 
-The trail follows only the primary caret and stores at most 12 points. The default **Speed lines (gradient)** style is transparent and narrow at its origin, strengthens toward the caret, and reaches the current logical caret height at its leading edge. It adapts to horizontal, vertical, and diagonal movement. Select **Rounded ribbon** under Trail style to use the earlier capsule-shaped appearance. High Contrast always uses a thinner solid form for readability. MotionFlow does not move or replace the IDE caret. On platforms with native smooth caret behavior, the trail automatically uses a shorter native-aware form.
+The trail follows only the primary caret and stores at most 12 samples. The default **Silky native trail** begins at the caret's immediately previous location, follows a smooth frame-sampled visual head to the new location, then fades after arrival. Its transparent tail grows into a caret-height leading edge, while a narrow luminous center curve keeps the effect visible. Select **Speed lines** or **Rounded ribbon** under Trail style for the alternative forms. High Contrast always uses a thinner solid indicator. MotionFlow does not move or replace the IDE caret; the platform move completes first.
 
-When focus moves between two visible Split Right or Split Down editor panes, the caret-trail setting also enables a distance-aware flow cue across the shared project frame. Its wedge rotates with the actual travel vector, including reverse and diagonal approaches. The native caret appears at the destination immediately; MotionFlow only paints a brief input-transparent cue from the previous caret position. The cue does not run between separate top-level IDE windows or hidden editor tabs.
+When focus moves between two visible Split Right or Split Down editor panes, the caret-trail setting also enables a distance-aware flow cue across the shared project frame. MotionFlow captures the source editor's last caret, clears any stale destination-local trail, and samples one continuous path to the settled destination. The native caret appears at the destination immediately; the cue does not run between separate top-level IDE windows or hidden editor tabs.
 
 ### Click ripple
 

@@ -12,7 +12,7 @@ class CaretTrailPainterTest {
     @Test
     fun `MF-ED-014 speed line color and alpha increase toward the caret`() {
         val ribbon = assertNotNull(
-            CaretFlowGeometry.speedLineRibbon(
+            CaretFlowGeometry.trailRibbon(
                 listOf(Point2D.Float(10f, 30f), Point2D.Float(130f, 30f)),
                 caretHeight = 20f,
             ),
@@ -32,5 +32,34 @@ class CaretTrailPainterTest {
         assertTrue(tailAlpha < middleAlpha, "Tail must fade toward transparency")
         assertTrue(middleAlpha < headAlpha, "Gradient must strengthen toward the caret")
         assertTrue(Color(image.getRGB(5, 30), true).alpha == 0, "No rounded cap may extend behind the origin")
+    }
+
+
+    @Test
+    fun `MF-ED-015 silky trail has a stronger visible core`() {
+        val ribbon = assertNotNull(
+            CaretFlowGeometry.trailRibbon(
+                listOf(
+                    Point2D.Float(10f, 30f),
+                    Point2D.Float(45f, 24f),
+                    Point2D.Float(85f, 34f),
+                    Point2D.Float(130f, 30f),
+                ),
+                caretHeight = 20f,
+            ),
+        )
+        val image = BufferedImage(150, 60, BufferedImage.TYPE_INT_ARGB)
+        val graphics = image.createGraphics()
+        try {
+            graphics.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON)
+            CaretTrailPainter.paintSilkyTrail(graphics, ribbon, Color(0x4A, 0x8D, 0xFF), 0.82f)
+        } finally {
+            graphics.dispose()
+        }
+
+        val visiblePixels = (0 until image.width).sumOf { x ->
+            (0 until image.height).count { y -> Color(image.getRGB(x, y), true).alpha >= 96 }
+        }
+        assertTrue(visiblePixels > 100, "Silky trail should remain clearly visible without a blur filter")
     }
 }

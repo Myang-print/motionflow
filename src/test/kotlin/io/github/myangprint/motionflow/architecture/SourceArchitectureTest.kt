@@ -65,6 +65,10 @@ class SourceArchitectureTest {
         assertTrue(flow.contains("target = rootContent"))
         assertTrue(session.contains("addFocusListener(focusListener)"))
         assertTrue(session.contains("removeFocusListener(focusListener)"))
+        assertTrue(session.contains("!editor.contentComponent.isFocusOwner"))
+        assertTrue(session.contains("trailSamples.startAt(previous, now)"))
+        assertTrue(session.contains("internal fun reanchorLocalTrail()"))
+        assertTrue(managerReanchorsDestinationAfterFocus())
     }
 
     @Test
@@ -78,10 +82,11 @@ class SourceArchitectureTest {
         val state = mainSource.resolve(
             "io/github/myangprint/motionflow/settings/MotionFlowState.kt",
         ).readText()
-        assertTrue(geometry.contains("fun speedLineRibbon"))
+        assertTrue(geometry.contains("fun trailRibbon"))
         assertTrue(painter.contains("LinearGradientPaint"))
-        assertTrue(painter.contains("graphics.fill(path)"))
-        assertTrue(state.contains("CaretTrailStyle.SPEED_LINES.name"))
+        assertTrue(painter.contains("fun paintSilkyTrail"))
+        assertTrue(painter.contains("graphics.fill(outlinePath(ribbon))"))
+        assertTrue(state.contains("CaretTrailStyle.SILKY_TRAIL.name"))
     }
 
     @Test
@@ -93,5 +98,13 @@ class SourceArchitectureTest {
 
     private fun kotlinSources(directory: Path = mainSource): List<Path> = Files.walk(directory).use { stream ->
         stream.filter { Files.isRegularFile(it) && it.extension == "kt" }.toList()
+    }
+
+    private fun managerReanchorsDestinationAfterFocus(): Boolean {
+        val manager = mainSource.resolve(
+            "io/github/myangprint/motionflow/editor/EditorEffectsManager.kt",
+        ).readText()
+        val deferred = manager.substringAfter("SwingUtilities.invokeLater")
+        return deferred.indexOf("target.reanchorLocalTrail()") in 0 until deferred.indexOf("target.caretAnchor()")
     }
 }

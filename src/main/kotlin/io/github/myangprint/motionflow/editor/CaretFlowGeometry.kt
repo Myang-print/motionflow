@@ -14,12 +14,20 @@ internal data class CaretFlowFrame(
     val alpha: Float,
 )
 
-internal data class SpeedLineRibbon(
+internal data class CaretTrailRibbon(
     val outline: List<Point2D.Float>,
+    val centerLine: List<Point2D.Float>,
     val gradientStart: Point2D.Float,
     val gradientEnd: Point2D.Float,
     val headLeft: Point2D.Float,
     val headRight: Point2D.Float,
+    val caretHeight: Float,
+)
+
+internal data class LocalCaretTrailFrame(
+    val point: Point2D.Float,
+    val travelProgress: Float,
+    val opacity: Float,
 )
 
 internal object CaretFlowGeometry {
@@ -38,12 +46,35 @@ internal object CaretFlowGeometry {
     fun transitionDurationMillis(distance: Double): Int =
         (180.0 + distance.coerceAtLeast(0.0) * 0.24).roundToInt().coerceIn(180, 420)
 
+    fun localTrailDurationMillis(distance: Double): Int =
+        (220.0 + distance.coerceAtLeast(0.0) * 0.20).roundToInt().coerceIn(220, 360)
+
+    fun localTrailFrame(
+        from: Point2D.Float,
+        to: Point2D.Float,
+        progress: Double,
+    ): LocalCaretTrailFrame {
+        val bounded = progress.coerceIn(0.0, 1.0).toFloat()
+        val rawTravel = (bounded / LOCAL_TRAVEL_FRACTION).coerceIn(0f, 1f)
+        val easedTravel = rawTravel * rawTravel * (3f - 2f * rawTravel)
+        val fadeProgress = ((bounded - LOCAL_TRAVEL_FRACTION) / (1f - LOCAL_TRAVEL_FRACTION)).coerceIn(0f, 1f)
+        val opacity = (1f - fadeProgress) * (1f - fadeProgress)
+        return LocalCaretTrailFrame(
+            point = Point2D.Float(
+                lerp(from.x, to.x, easedTravel),
+                lerp(from.y, to.y, easedTravel),
+            ),
+            travelProgress = easedTravel,
+            opacity = opacity,
+        )
+    }
+
     /**
      * Builds a tapered ribbon around a motion path. The tail converges to the
      * origin, while the leading edge is exactly one logical caret height wide
      * and remains perpendicular to the arrival direction.
      */
-    fun speedLineRibbon(points: List<Point2D.Float>, caretHeight: Float): SpeedLineRibbon? {
+    fun trailRibbon(points: List<Point2D.Float>, caretHeight: Float): CaretTrailRibbon? {
         val accepted = ArrayList<Point2D.Float>(points.size)
         points.forEach { point ->
             val previous = accepted.lastOrNull()
@@ -77,12 +108,14 @@ internal object CaretFlowGeometry {
         val outline = ArrayList<Point2D.Float>(accepted.size * 2)
         outline.addAll(left)
         right.asReversed().forEach { outline += it }
-        return SpeedLineRibbon(
+        return CaretTrailRibbon(
             outline = outline.toList(),
+            centerLine = accepted.toList(),
             gradientStart = accepted.first(),
             gradientEnd = accepted.last(),
             headLeft = left.last(),
             headRight = right.last(),
+            caretHeight = normalizeCaretHeight(caretHeight),
         )
     }
 
@@ -106,13 +139,14 @@ internal object CaretFlowGeometry {
             tailX = lerp(fromX, toX, tailProgress),
             tailY = lerp(fromY, toY, tailProgress),
             caretHeight = lerp(normalizeCaretHeight(fromHeight), normalizeCaretHeight(toHeight), headProgress),
-            alpha = (0.38 * intensityScale.coerceIn(0.0, 2.0) * entryFade * exitFade)
+            alpha = (0.58 * intensityScale.coerceIn(0.0, 2.0) * entryFade * exitFade)
                 .toFloat()
-                .coerceIn(0f, 0.76f),
+                .coerceIn(0f, 0.88f),
         )
     }
 
     private fun lerp(from: Float, to: Float, progress: Float): Float = from + (to - from) * progress
 
     private const val RIBBON_TAPER_EXPONENT = 0.72
+    private const val LOCAL_TRAVEL_FRACTION = 0.62f
 }

@@ -4,7 +4,7 @@
 
 1. Confirm **Enable MotionFlow** and the individual effect are enabled.
 2. Check Reduced Motion and the selected Power Save Mode behavior.
-3. Use a standard main editor. Consoles, previews, diff editors, one-line editors, and unsupported sessions fail closed in `0.2.1`.
+3. Use a standard main editor. Consoles, previews, diff editors, one-line editors, and unsupported sessions fail closed in `0.2.2`.
 4. Ensure the target component is visible in a normal project frame.
 5. Run **MotionFlow: Copy Diagnostics** and inspect the categorical capability/degradation state.
 
@@ -20,7 +20,11 @@ MotionFlow never changes the IDE's caret settings. On the native smooth-caret pl
 
 ## The caret trail shape is not what I prefer
 
-Open MotionFlow settings and change **Trail style**. **Speed lines (gradient)** is the default tapered form; **Rounded ribbon** restores the full-height capsule form. Intensity controls the peak opacity, while Trail length controls the bounded point history. High Contrast intentionally replaces both translucent styles with a solid square-ended indicator.
+Open MotionFlow settings and change **Trail style**. **Silky native trail** is the default continuous afterimage; **Speed lines** keeps the sharper wedge, and **Rounded ribbon** restores the capsule form. Intensity controls peak opacity, while Trail length controls the bounded frame history. High Contrast intentionally replaces translucent styles with a solid square-ended indicator.
+
+## The trail starts from an old or unrelated caret position
+
+Version `0.2.2` resets every local trail to the immediately previous accepted caret and suppresses destination-local history during split-pane focus changes. If this still occurs, record whether the move was typing, mouse relocation, Find Action navigation, Split Right/Down focus, or a scroll/fold change, and attach a short recording plus copied diagnostics.
 
 ## The split-pane caret flow does not appear
 

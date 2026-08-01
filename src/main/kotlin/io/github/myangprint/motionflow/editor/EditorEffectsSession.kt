@@ -28,6 +28,7 @@ import java.awt.event.MouseEvent
 import java.awt.geom.Point2D
 import javax.swing.SwingUtilities
 import kotlin.math.hypot
+import kotlin.math.pow
 
 class EditorEffectsSession(
     private val editor: Editor,
@@ -36,7 +37,6 @@ class EditorEffectsSession(
     private val diagnostics: DiagnosticsService,
     private val onFocusGained: (EditorEffectsSession) -> Unit,
 ) : MotionOwner {
-    private data class TrailPoint(val point: Point2D.Float, val createdAtNanos: Long)
     private data class Press(val point: Point, val whenMillis: Long)
 
     override var motionDisposed: Boolean = false
@@ -44,7 +44,7 @@ class EditorEffectsSession(
 
     private val ownerToken = OwnerTokens.create()
     private val surfaceToken = OwnerTokens.create()
-    private val trailPoints = ArrayDeque<TrailPoint>(MAX_TRAIL_POINTS)
+    private val trailSamples = CaretTrailSampleBuffer(MAX_TRAIL_POINTS)
     private val rippleModels = LinkedHashMap<Int, RippleVisual>()
     private val trailBreaker = breaker(EffectType.CARET_TRAIL)
     private val rippleBreaker = breaker(EffectType.CLICK_RIPPLE)
@@ -60,6 +60,7 @@ class EditorEffectsSession(
     private var lastPoint: Point2D.Float? = null
     private var lastVisualLine: Int? = null
     private var nextRippleId = 1
+    private var trailGeneration = 0L
 
     private val overlay = SurfaceOverlay(
         target = editor.contentComponent,
@@ -75,6 +76,8 @@ class EditorEffectsSession(
 
     init {
         editor.contentComponent.addFocusListener(focusListener)
+        lastPoint = currentCaretPoint()
+        lastVisualLine = editor.caretModel.primaryCaret.visualPosition.line
     }
 
     fun onCaretPositionChanged(event: CaretEvent) {
@@ -89,7 +92,7 @@ class EditorEffectsSession(
         lastPoint = current
         lastVisualLine = visualPosition.line
 
-        if (!editor.contentComponent.isShowing || previous == null) return
+        if (!editor.contentComponent.isShowing || !editor.contentComponent.isFocusOwner || previous == null) return
         if (hypot((current.x - previous.x).toDouble(), (current.y - previous.y).toDouble()) < 0.75) return
 
         if (policy.effectEnabled(EffectType.CARET_TRAIL)) {
@@ -132,25 +135,36 @@ class EditorEffectsSession(
     }
 
     fun onVisibleAreaChanged() {
-        if (motionDisposed || trailPoints.isEmpty()) return
+        if (motionDisposed || trailSamples.isEmpty) return
+        trailGeneration++
         engine.cancel(trailKey(), CancelReason.EXPLICIT)
-        trailPoints.clear()
-        publish(model.copy(trail = emptyList(), speedLine = null))
+        trailSamples.clear()
+        publish(model.copy(trail = emptyList(), trailRibbon = null))
     }
 
     internal fun caretAnchor(): EditorCaretAnchor? {
         if (motionDisposed || editor.isDisposed || !editor.contentComponent.isShowing) return null
-        val point = editor.visualPositionToPoint2D(editor.caretModel.primaryCaret.visualPosition)
+        val point = lastPoint ?: currentCaretPoint()
         val height = CaretFlowGeometry.normalizeCaretHeight(editor.lineHeight.toFloat())
         return EditorCaretAnchor(
             component = editor.contentComponent,
-            point = Point2D.Float(point.x.toFloat(), point.y.toFloat()),
+            point = Point2D.Float(point.x, point.y),
             caretHeight = height,
             accent = MotionPalette.accent(editor.colorsScheme.defaultBackground),
         )
     }
 
     internal fun isFocusOwner(): Boolean = !motionDisposed && editor.contentComponent.isFocusOwner
+
+    internal fun reanchorLocalTrail() {
+        if (motionDisposed || editor.isDisposed) return
+        trailGeneration++
+        engine.cancel(trailKey(), CancelReason.REPLACED)
+        trailSamples.clear()
+        lastPoint = currentCaretPoint()
+        lastVisualLine = editor.caretModel.primaryCaret.visualPosition.line
+        publish(model.copy(trail = emptyList(), trailRibbon = null, style = currentStyle()))
+    }
 
     fun onPolicyChanged(next: MotionPolicy) {
         if (motionDisposed) return
@@ -162,9 +176,10 @@ class EditorEffectsSession(
             return
         }
         if (!next.effectEnabled(EffectType.CARET_TRAIL)) {
+            trailGeneration++
             engine.cancel(trailKey(), CancelReason.POLICY_CHANGED)
-            trailPoints.clear()
-            publish(model.copy(trail = emptyList(), speedLine = null))
+            trailSamples.clear()
+            publish(model.copy(trail = emptyList(), trailRibbon = null))
         }
         if (!next.effectEnabled(EffectType.CLICK_RIPPLE)) {
             rippleModels.keys.toList().forEach { engine.cancel(rippleKey(it), CancelReason.POLICY_CHANGED) }
@@ -180,63 +195,93 @@ class EditorEffectsSession(
     override fun dispose() {
         if (motionDisposed) return
         motionDisposed = true
+        trailGeneration++
         editor.contentComponent.removeFocusListener(focusListener)
         if (SwingUtilities.isEventDispatchThread()) engine.cancelOwner(ownerToken, CancelReason.OWNER_DISPOSED)
-        trailPoints.clear()
+        trailSamples.clear()
         rippleModels.clear()
         model = EditorOverlayModel(style = model.style)
     }
 
     private fun startTrail(previous: Point2D.Float, current: Point2D.Float) {
         val now = System.nanoTime()
-        if (trailPoints.isEmpty()) trailPoints.addLast(TrailPoint(previous, now))
-        trailPoints.addLast(TrailPoint(current, now))
         val maximum = minOf(
             policy.caretTrailLength,
             if (policy.nativeSmoothCaretEra) NATIVE_AWARE_TRAIL_POINTS else MAX_TRAIL_POINTS,
         )
-        while (trailPoints.size > maximum) trailPoints.removeFirst()
         val duration = policy.duration(
-            if (policy.nativeSmoothCaretEra) NATIVE_AWARE_TRAIL_DURATION_MILLIS else TRAIL_DURATION_MILLIS,
+            if (policy.nativeSmoothCaretEra) {
+                NATIVE_AWARE_TRAIL_DURATION_MILLIS
+            } else {
+                CaretFlowGeometry.localTrailDurationMillis(
+                    hypot((current.x - previous.x).toDouble(), (current.y - previous.y).toDouble()),
+                )
+            },
             EffectType.CARET_TRAIL,
         )
-        engine.animate(
+        val generation = ++trailGeneration
+        trailSamples.startAt(previous, now)
+        publishTrail(now, duration, opacity = 1f)
+        val accepted = engine.animate(
             key = trailKey(),
             owner = this,
-            spec = MotionSpec(duration, EasingId.STANDARD),
+            spec = MotionSpec(duration, EasingId.LINEAR),
             restart = true,
             repaintTarget = overlay,
-            onFrame = { _, _, frameNow -> publishTrail(frameNow, duration) },
-            onEnd = {
-                trailPoints.clear()
-                publish(model.copy(trail = emptyList(), speedLine = null))
+            onFrame = { _, progress, frameNow ->
+                if (generation != trailGeneration) return@animate
+                val frame = CaretFlowGeometry.localTrailFrame(previous, current, progress)
+                trailSamples.append(frame.point, frameNow, maximum)
+                publishTrail(frameNow, duration, frame.opacity)
+            },
+            onEnd = { reason ->
+                if (generation != trailGeneration) return@animate
+                if (reason != CancelReason.REPLACED) {
+                    trailSamples.clear()
+                    publish(model.copy(trail = emptyList(), trailRibbon = null))
+                }
             },
         )
+        if (!accepted && generation == trailGeneration) {
+            engine.cancel(trailKey(), CancelReason.REPLACED)
+            trailSamples.clear()
+            publish(model.copy(trail = emptyList(), trailRibbon = null))
+        }
     }
 
-    private fun publishTrail(nowNanos: Long, durationMillis: Int) {
+    private fun publishTrail(nowNanos: Long, durationMillis: Int, opacity: Float) {
         val durationNanos = maxOf(1L, durationMillis.toLong() * 1_000_000L)
-        while (trailPoints.isNotEmpty() && nowNanos - trailPoints.first().createdAtNanos >= durationNanos) {
-            trailPoints.removeFirst()
-        }
+        trailSamples.trimExpired(nowNanos, durationNanos)
         val simplifiedCount = if (policy.highContrast || engine.degradationLevel().name != "NORMAL") 4 else policy.caretTrailLength
-        val visible = trailPoints.takeLast(simplifiedCount).map { point ->
-            val age = ((nowNanos - point.createdAtNanos).toDouble() / durationNanos).coerceIn(0.0, 1.0)
+        val source = trailSamples.snapshot(simplifiedCount)
+        if (source.isEmpty()) {
+            publish(model.copy(trail = emptyList(), trailRibbon = null))
+            return
+        }
+        val peakAlpha = (0.66 * policy.intensityScale * opacity.coerceIn(0f, 1f))
+            .toFloat()
+            .coerceIn(0f, 0.90f)
+        val visible = source.mapIndexed { index, point ->
+            val spatialProgress = (index + 1).toDouble() / source.size.toDouble()
             TrailVisual(
                 point.point.x,
                 point.point.y,
-                if (policy.highContrast) 1f else ((1.0 - age) * 0.36 * policy.intensityScale).toFloat(),
+                if (policy.highContrast) 1f else peakAlpha * spatialProgress.pow(0.72).toFloat(),
             )
         }
-        val speedLine = if (!policy.highContrast && policy.caretTrailStyle == CaretTrailStyle.SPEED_LINES) {
-            CaretFlowGeometry.speedLineRibbon(
+        val trailRibbon = if (
+            !policy.highContrast &&
+            (policy.caretTrailStyle == CaretTrailStyle.SILKY_TRAIL ||
+                policy.caretTrailStyle == CaretTrailStyle.SPEED_LINES)
+        ) {
+            CaretFlowGeometry.trailRibbon(
                 visible.map { point -> Point2D.Float(point.x, point.y + model.style.lineHeight / 2f) },
                 model.style.lineHeight,
             )
         } else {
             null
         }
-        publish(model.copy(trail = visible, speedLine = speedLine))
+        publish(model.copy(trail = visible, trailRibbon = trailRibbon))
     }
 
     private fun startRipple(point: Point) {
@@ -304,14 +349,15 @@ class EditorEffectsSession(
     }
 
     private fun clearModel() {
-        trailPoints.clear()
+        trailGeneration++
+        trailSamples.clear()
         rippleModels.clear()
         publish(EditorOverlayModel(style = currentStyle()))
     }
 
     private fun paintOverlay(graphics: Graphics2D, size: java.awt.Dimension) {
         val snapshot = model
-        if (snapshot.trail.isEmpty() && snapshot.speedLine == null && snapshot.ripples.isEmpty() && snapshot.pulse == null) return
+        if (snapshot.trail.isEmpty() && snapshot.trailRibbon == null && snapshot.ripples.isEmpty() && snapshot.pulse == null) return
         val style = snapshot.style
         graphics.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON)
 
@@ -330,14 +376,13 @@ class EditorEffectsSession(
             )
         }
         if (snapshot.trail.size >= 2) {
-            if (style.caretTrailStyle == CaretTrailStyle.SPEED_LINES && !style.highContrast) {
-                snapshot.speedLine?.let { ribbon ->
-                    CaretTrailPainter.paintSpeedLine(
-                        graphics,
-                        ribbon,
-                        style.accent,
-                        snapshot.trail.last().alpha,
-                    )
+            if (!style.highContrast && style.caretTrailStyle == CaretTrailStyle.SILKY_TRAIL) {
+                snapshot.trailRibbon?.let { ribbon ->
+                    CaretTrailPainter.paintSilkyTrail(graphics, ribbon, style.accent, snapshot.trail.last().alpha)
+                }
+            } else if (!style.highContrast && style.caretTrailStyle == CaretTrailStyle.SPEED_LINES) {
+                snapshot.trailRibbon?.let { ribbon ->
+                    CaretTrailPainter.paintSpeedLine(graphics, ribbon, style.accent, snapshot.trail.last().alpha)
                 }
             } else {
                 for (index in 1 until snapshot.trail.size) {
@@ -379,6 +424,11 @@ class EditorEffectsSession(
         )
     }
 
+    private fun currentCaretPoint(): Point2D.Float {
+        val point = editor.visualPositionToPoint2D(editor.caretModel.primaryCaret.visualPosition)
+        return Point2D.Float(point.x.toFloat(), point.y.toFloat())
+    }
+
     private fun toContentPoint(mouse: MouseEvent): Point = if (mouse.component === editor.contentComponent) {
         mouse.point
     } else {
@@ -389,9 +439,10 @@ class EditorEffectsSession(
         diagnostics.recordError("${type.name}_CIRCUIT_OPEN")
         when (type) {
             EffectType.CARET_TRAIL -> {
+                trailGeneration++
                 engine.cancel(trailKey(), CancelReason.FAILED)
-                trailPoints.clear()
-                publish(model.copy(trail = emptyList(), speedLine = null))
+                trailSamples.clear()
+                publish(model.copy(trail = emptyList(), trailRibbon = null))
             }
             EffectType.CLICK_RIPPLE -> {
                 rippleModels.keys.toList().forEach { engine.cancel(rippleKey(it), CancelReason.FAILED) }
@@ -413,7 +464,6 @@ class EditorEffectsSession(
     private companion object {
         const val MAX_TRAIL_POINTS = 12
         const val MAX_RIPPLES = 3
-        const val TRAIL_DURATION_MILLIS = 300
         const val NATIVE_AWARE_TRAIL_DURATION_MILLIS = 180
         const val NATIVE_AWARE_TRAIL_POINTS = 4
         const val RIPPLE_DURATION_MILLIS = 180

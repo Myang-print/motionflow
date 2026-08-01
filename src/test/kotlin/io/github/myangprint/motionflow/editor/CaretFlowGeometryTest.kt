@@ -50,7 +50,7 @@ class CaretFlowGeometryTest {
     @Test
     fun `MF-ED-014 speed line tapers to its origin and meets the caret at full height`() {
         val ribbon = assertNotNull(
-            CaretFlowGeometry.speedLineRibbon(
+            CaretFlowGeometry.trailRibbon(
                 listOf(Point2D.Float(10f, 20f), Point2D.Float(110f, 20f)),
                 caretHeight = 20f,
             ),
@@ -77,7 +77,7 @@ class CaretFlowGeometryTest {
 
         destinations.forEach { destination ->
             val ribbon = assertNotNull(
-                CaretFlowGeometry.speedLineRibbon(
+                CaretFlowGeometry.trailRibbon(
                     listOf(Point2D.Float(0f, 0f), destination),
                     caretHeight = 18f,
                 ),
@@ -114,6 +114,33 @@ class CaretFlowGeometryTest {
                 frame.headY * (frame.headY - frame.tailY)
             assertTrue(directionDot > 0f, "Tail moved ahead of the caret toward ($toX, $toY)")
         }
+    }
+
+    @Test
+    fun `MF-ED-015 local trail begins at the exact previous caret and settles at the destination`() {
+        val from = Point2D.Float(18f, 24f)
+        val to = Point2D.Float(118f, 64f)
+
+        val start = CaretFlowGeometry.localTrailFrame(from, to, 0.0)
+        val middle = CaretFlowGeometry.localTrailFrame(from, to, 0.31)
+        val settled = CaretFlowGeometry.localTrailFrame(from, to, 0.62)
+        val faded = CaretFlowGeometry.localTrailFrame(from, to, 1.0)
+
+        assertEquals(from, start.point)
+        assertEquals(1f, start.opacity)
+        assertTrue(middle.point.x in from.x..to.x)
+        assertTrue(middle.point.y in from.y..to.y)
+        assertEquals(to, settled.point)
+        assertEquals(1f, settled.opacity)
+        assertEquals(to, faded.point)
+        assertEquals(0f, faded.opacity)
+    }
+
+    @Test
+    fun `MF-ED-015 local trail timing is distance aware and bounded`() {
+        assertEquals(220, CaretFlowGeometry.localTrailDurationMillis(0.0))
+        assertTrue(CaretFlowGeometry.localTrailDurationMillis(300.0) > 220)
+        assertEquals(360, CaretFlowGeometry.localTrailDurationMillis(10_000.0))
     }
 
     private fun signedArea(points: List<Point2D.Float>): Double = points.indices.sumOf { index ->

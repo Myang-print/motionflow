@@ -91,11 +91,13 @@ The adapter maintains a bounded deque internally but publishes an immutable comp
 
 ### 5.3 Rendering
 
-Balanced mode defaults to a speed-line ribbon, not a capsule stroke. Bounded centerline samples produce a tapered polygon: its oldest edge converges to the motion origin, its leading edge is perpendicular to the arrival vector and exactly one logical caret height wide, and its paint progresses from transparent accent to the strongest bounded accent at the caret. Spatial taper and alpha gradient make the tail disappear toward its origin, while point age fades the complete ribbon over time.
+Balanced mode defaults to a silky frame-sampled ribbon, not a polygon joining raw caret events. On every accepted move, the adapter discards stale history, records the immediately previous caret as the exact origin, and advances a visual trail head toward the already-completed platform destination during the travel phase of one finite timeline. The shared 16 ms clock contributes bounded intermediate samples; after arrival, a separate fade phase reduces the complete afterimage smoothly to zero.
+
+Bounded centerline samples produce a tapered polygon: its oldest edge converges to the motion origin, its leading edge is perpendicular to the arrival vector and exactly one logical caret height wide, and its paint progresses from transparent accent to the strongest bounded accent at the caret. The Silky painter adds a narrow, high-alpha antialiased center curve for visibility without a blur or shadow filter. Balanced peak alpha is bounded at `0.66` before profile scaling and never exceeds `0.90`.
 
 The same geometry handles left, right, up, down, and diagonal movement. Consecutive centerline tangents define each polygon edge, so a vertical transition does not collapse and reverse-direction movement does not assume a fixed screen side. The leading edge meets the plugin-owned cross-pane caret cue; inside one editor it terminates beneath the native caret without replacing it.
 
-`Speed lines (gradient)` is the default persisted style. `Rounded ribbon` preserves the earlier caret-height `CAP_ROUND` rendering as an explicit user option. High Contrast ignores translucent styles and uses a thinner solid, square-ended indicator. Theme accent/editor foreground provides the base color with bounded alpha; no blur or shadow filter is used.
+`Silky native trail` is the schema-v3 default persisted style. A schema-v2 `Speed lines` default migrates to Silky once; users may then explicitly choose Speed lines or `Rounded ribbon`, which preserves the earlier caret-height `CAP_ROUND` rendering. High Contrast ignores translucent styles and uses a thinner solid, square-ended indicator. Theme accent/editor foreground provides the base color with bounded alpha.
 
 Avoid expensive blur filters. Level-1 degradation reduces point count and renders simple line segments. High contrast uses a solid, short indicator with no translucent trail.
 
@@ -123,9 +125,9 @@ An all-carets option requires a separate performance and usability decision.
 
 ### 5.6 Split-pane focus flow
 
-Each eligible editor content component owns a standard JDK focus listener under its session lifetime. After focus reaches a different showing editor, the manager captures the previous caret anchor, waits one EDT turn for the destination caret state to settle, and starts a temporary shared-root flow only when both editor components still share the same `JRootPane`.
+Each eligible editor content component owns a standard JDK focus listener under its session lifetime. After focus reaches a different showing editor, the manager first captures the source session's last accepted caret anchor, immediately clears any destination-local stale trail, waits one EDT turn for click/focus caret state to settle, re-anchors the destination again, and starts a temporary shared-root flow only when both editor components still share the same `JRootPane`.
 
-The transition overlay targets the root content component, so its input-transparent caret-height ribbon can cross a Split Right or Split Down divider. A distance-aware 180–420 ms timeline moves a sharp-edged, plugin-owned caret cue toward the destination while a short tail follows behind. The tail polygon and gradient are recalculated from the current velocity vector, so approach from any side or diagonal remains tapered and non-degenerate. The native caret moves immediately under IntelliJ control and is never hidden, delayed, or repositioned.
+The transition overlay targets the root content component, so its input-transparent caret-height ribbon can cross a Split Right or Split Down divider. A distance-aware 180–420 ms timeline moves a sharp-edged, plugin-owned caret cue toward the destination while the same bounded frame-sample buffer builds a continuous tail behind it. Only this source-to-destination cue runs; a destination editor never contributes its older local caret as a competing origin. The native caret moves immediately under IntelliJ control and is never hidden, delayed, or repositioned.
 
 The flow fails closed when either editor is hidden or disposed, focus changes again before the deferred EDT turn, the components belong to different top-level frames, or Reduced Motion, Power Save policy, global disable, or the caret-trail switch disables spatial motion. A newer focus request replaces the active flow for that root pane, and the temporary overlay is disposed at completion or cancellation.
 
@@ -197,6 +199,7 @@ Default: support standard text editors; fail closed elsewhere until a test prove
 Automated where feasible:
 
 - primary caret moves horizontally/vertically;
+- a second movement while the first trail is active replaces the visible origin with its exact previous caret;
 - large navigation jump versus typing;
 - folded and soft-wrapped lines;
 - scroll during active trail;
@@ -205,6 +208,7 @@ Automated where feasible:
 - click versus drag/right-click/double-click;
 - release editor during every animation phase;
 - rapid file switch and editor split;
+- destination caret relocation during focus gain does not emit a competing destination-local trail;
 - split transitions from every cardinal direction and all four diagonal quadrants;
 - global disable/reduced motion/Power Save mid-animation;
 - 100 create/release cycles with leak assertion.

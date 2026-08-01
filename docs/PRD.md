@@ -144,7 +144,7 @@ Those product ideas are useful. Its implementation mechanism is not portable bec
 | --- | --- | --- |
 | Core | Shared frame clock, timelines, easing, cancellation, repaint coalescing | On when needed |
 | Policy | Global enable, profiles, reduced motion, Power Save Mode behavior | Balanced profile |
-| Editor | Gradient speed-line caret trail | On for 2025.3; rounded ribbon optional |
+| Editor | Silky frame-sampled caret trail | On for 2025.3; speed-line/rounded styles optional |
 | Editor | Caret flow between visible split panes | On with the caret-trail setting |
 | Editor | Click ripple | On |
 | Editor | Active-line pulse after large navigation jumps | On |
@@ -246,7 +246,8 @@ Selecting a named profile replaces the current effective values. Editing a profi
 - **MF-ED-011:** Editor effects adapt to scale changes and HiDPI transforms without storing device-pixel coordinates as logical coordinates.
 - **MF-ED-012:** Editor release immediately disposes its painter, listeners, and timelines.
 - **MF-ED-013:** When focus moves between two showing editor components in the same root pane, MotionFlow may animate a caret-sized, non-interactive flow cue from the previous caret position to the destination. It never moves either platform caret, crosses top-level frames, or runs when the caret trail is disabled by policy.
-- **MF-ED-014:** The default standard-theme trail is a direction-aware speed-line ribbon: it tapers to its origin, uses a transparent-to-accent gradient, reaches the logical caret height at its leading edge, and fades over time. It remains valid for horizontal, vertical, and diagonal arrival vectors. A rounded-ribbon style is user-selectable but not the default; High Contrast keeps its solid fallback.
+- **MF-ED-014:** Standard-theme trail geometry tapers to its origin, uses a transparent-to-accent gradient, reaches the logical caret height at its leading edge, and remains valid for horizontal, vertical, and diagonal arrival vectors. The default Silky style adds a bounded high-visibility center core; Speed lines and Rounded ribbon remain user-selectable alternatives. High Contrast keeps its solid fallback.
+- **MF-ED-015:** Every local trail starts at the immediately previous accepted primary-caret coordinate, advances through bounded per-frame interpolated samples, settles at the current caret, and fades after arrival. A new movement replaces stale history. During cross-editor focus changes, the destination local trail is suppressed/re-anchored so exactly one shared-root cue begins at the source editor's last caret coordinate.
 
 ### 9.4 Context and workbench effects
 

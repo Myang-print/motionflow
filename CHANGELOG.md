@@ -4,6 +4,23 @@ All notable changes to MotionFlow will be documented here. The format follows [K
 
 ## [Unreleased]
 
+## [0.2.2] - 2026-08-01
+
+### Added
+
+- Added **Silky native trail**, a frame-sampled afterimage with a smooth center core and gradual post-arrival fade.
+
+### Changed
+
+- Increased the standard-theme trail's bounded peak visibility while preserving theme-derived color and source readability.
+- Made the silky trail the schema-v3 default; schema-v2 speed-line defaults migrate automatically, while Speed lines and Rounded ribbon remain explicit options.
+- Updated split-pane flow to build its tail from actual animated-head samples rather than a rigid two-point wedge.
+
+### Fixed
+
+- Reset each local trail to the immediately previous caret instead of retaining a stale origin from an older movement.
+- Suppressed destination-editor local trails during split-pane focus changes and re-anchored after one EDT turn, leaving one exact source-to-destination cue.
+
 ## [0.2.1] - 2026-08-01
 
 ### Added
@@ -49,7 +66,8 @@ All notable changes to MotionFlow will be documented here. The format follows [K
 - Added failure isolation, high-contrast simplification, native smooth-caret-era coexistence, privacy sanitization, and architecture guards.
 - Added product branding, diagrams, user documentation, troubleshooting guidance, and release evidence templates.
 
-[Unreleased]: https://github.com/Myang-print/motionflow/compare/v0.2.1...HEAD
+[Unreleased]: https://github.com/Myang-print/motionflow/compare/v0.2.2...HEAD
+[0.2.2]: https://github.com/Myang-print/motionflow/compare/v0.2.1...v0.2.2
 [0.2.1]: https://github.com/Myang-print/motionflow/compare/v0.2.0...v0.2.1
 [0.2.0]: https://github.com/Myang-print/motionflow/compare/v0.1.1...v0.2.0
 [0.1.1]: https://github.com/Myang-print/motionflow/compare/v0.1.0...v0.1.1

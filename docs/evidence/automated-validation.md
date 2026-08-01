@@ -12,13 +12,13 @@ Toolchain: JetBrains Runtime 21, Gradle 9.5.0, Kotlin 2.2.20
 .\gradlew.bat check verifyPluginProjectConfiguration verifyPluginStructure buildPlugin --no-daemon --no-configuration-cache --console=plain
 ```
 
-Result: **passed** — 17 suites, 51 tests, 0 failures, 0 errors, 0 skipped. The suite covers deterministic easing and timelines, scheduler start/stop, zero-duration fallback, global and per-surface capacity, callback isolation, adaptive degradation, settings normalization and trail-style migration, motion policy, editor-event classification, EDT-safe startup and project-expiration behavior, all cardinal/diagonal speed-line geometry, rendered gradient fade, contrast, diagnostics privacy, plugin identity, forbidden architecture mechanisms, documentation links, requirement traceability, release-version consistency, and brand assets.
+Result: **passed** — 18 suites, 57 tests, 0 failures, 0 errors, 0 skipped. The suite covers deterministic easing and timelines, scheduler start/stop, zero-duration fallback, global and per-surface capacity, callback isolation, adaptive degradation, schema-v3 style migration, motion policy, editor-event classification, EDT-safe startup and project-expiration behavior, exact previous-caret origin replacement, bounded frame sampling, travel/fade phases, all cardinal/diagonal ribbon geometry, rendered gradient/core visibility, focus re-anchor architecture, contrast, diagnostics privacy, plugin identity, forbidden mechanisms, documentation integrity, release-version consistency, and brand assets.
 
 Packaged artifact:
 
-- file: `MotionFlow-0.2.1.zip`
-- size: `234525` bytes
-- SHA-256: `785562F5216143FA7547E2AD861239FE5FF35667E3BDAD15281C3E74014A0F37`
+- file: `MotionFlow-0.2.2.zip`
+- size: `243421` bytes
+- SHA-256: `572994B30D31F159F58CC6E1583392F4EF9524B23D49525C3A97C578A55445E4`
 
 ## Plugin Verifier
 
@@ -39,7 +39,7 @@ Plugin Verifier reported no binary incompatibility, internal API, removed API, o
 
 `runIde` previously launched a clean IntelliJ IDEA 2025.3.6 sandbox with `io.github.myangprint.motionflow` listed as a required plugin. The sandbox log recorded MotionFlow `0.1.1` as a loaded custom plugin and contained no MotionFlow startup-thread exception or plugin error for that launch.
 
-The user subsequently installed the local `0.2.0` package into IntelliJ IDEA and confirmed that the live trail matched the caret height, then supplied the visual findings that led to `0.2.1`. This proves the live event/overlay path and 0.2.0 caret-height change ran; the exact 0.2.1 speed-line appearance still requires installation of the packaged ZIP and is not represented as an already completed manual observation.
+The user installed the local `0.2.0` and `0.2.1` packages into IntelliJ IDEA. They confirmed the live caret-height path and then identified the stiff endpoint motion, low visibility, and stale/competing origin defects addressed by `0.2.2`. The exact 0.2.2 silky appearance still requires installation of the packaged ZIP and is not represented as an already completed manual observation.
 
 ## Static architecture checks
 
@@ -58,11 +58,11 @@ All checks passed.
 
 ## Hosted validation
 
-[GitHub Actions run 30683101832](https://github.com/Myang-print/motionflow/actions/runs/30683101832) passed from the 0.2.1 implementation commit `e1f0960`:
+[GitHub Actions run 30683585001](https://github.com/Myang-print/motionflow/actions/runs/30683585001) passed for the preceding 0.2.1 branch head `e2498fd`:
 
-- Ubuntu package, structure, and test gate: 3m25s;
-- macOS test and configuration gate: 1m29s;
-- Windows test and configuration gate: 8m22s;
-- two-baseline Plugin Verifier gate: 8m47s.
+- Ubuntu package, structure, and test gate: 3m30s;
+- macOS test and configuration gate: 1m26s;
+- Windows test and configuration gate: 9m45s;
+- two-baseline Plugin Verifier gate: 7m30s.
 
-The workflow artifact is retained by GitHub Actions as `motionflow-plugin`; local gates and the artifact hash above remain the reproducible evidence for the exact 0.2.1 file stored in this workspace.
+That run proves the branch workflow before the 0.2.2 refinement. Local gates and the artifact hash above are the exact evidence for 0.2.2; hosted 0.2.2 validation reruns after push.

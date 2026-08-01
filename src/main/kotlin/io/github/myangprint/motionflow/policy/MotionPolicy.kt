@@ -52,7 +52,7 @@ data class MotionPolicy(
             durationScale = 1.0,
             intensityScale = 1.0,
             caretTrailLength = 7,
-            caretTrailStyle = CaretTrailStyle.SPEED_LINES,
+            caretTrailStyle = CaretTrailStyle.SILKY_TRAIL,
             navigationJumpThreshold = 8,
             inactiveFrameDimAmount = 0.10,
             effects = EffectType.entries.associateWith { false },

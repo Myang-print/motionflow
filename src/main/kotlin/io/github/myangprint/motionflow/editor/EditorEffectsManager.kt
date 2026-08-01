@@ -147,9 +147,11 @@ class EditorEffectsManager : MotionOwner {
     private fun onEditorFocusGained(target: EditorEffectsSession) {
         check(SwingUtilities.isEventDispatchThread()) { "Editor focus changes must run on the EDT" }
         val source = focusedSession
+        if (source === target) return
+        val from = source?.caretAnchor()
         focusedSession = target
-        if (source == null || source === target) return
-        val from = source.caretAnchor() ?: return
+        target.reanchorLocalTrail()
+        if (from == null) return
         val lifecycle = runtimeDisposable ?: return
         SwingUtilities.invokeLater {
             if (
@@ -158,6 +160,7 @@ class EditorEffectsManager : MotionOwner {
                 focusedSession !== target ||
                 !target.isFocusOwner()
             ) return@invokeLater
+            target.reanchorLocalTrail()
             val to = target.caretAnchor() ?: return@invokeLater
             crossEditorFlow?.start(from, to)
         }

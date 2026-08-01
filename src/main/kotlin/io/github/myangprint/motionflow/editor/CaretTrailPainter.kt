@@ -12,18 +12,12 @@ import kotlin.math.roundToInt
 internal object CaretTrailPainter {
     fun paintSpeedLine(
         graphics: Graphics2D,
-        ribbon: SpeedLineRibbon,
+        ribbon: CaretTrailRibbon,
         accent: Color,
         alpha: Float,
     ) {
         val boundedAlpha = alpha.coerceIn(0f, 0.82f)
         if (boundedAlpha <= 0f) return
-        val path = Path2D.Float(Path2D.WIND_NON_ZERO, ribbon.outline.size)
-        ribbon.outline.forEachIndexed { index, point ->
-            if (index == 0) path.moveTo(point.x, point.y) else path.lineTo(point.x, point.y)
-        }
-        path.closePath()
-
         graphics.paint = LinearGradientPaint(
             ribbon.gradientStart,
             ribbon.gradientEnd,
@@ -35,7 +29,47 @@ internal object CaretTrailPainter {
                 MotionPalette.withAlpha(accent, boundedAlpha.toDouble()),
             ),
         )
-        graphics.fill(path)
+        graphics.fill(outlinePath(ribbon))
+    }
+
+    fun paintSilkyTrail(
+        graphics: Graphics2D,
+        ribbon: CaretTrailRibbon,
+        accent: Color,
+        alpha: Float,
+    ) {
+        val boundedAlpha = alpha.coerceIn(0f, 0.90f)
+        if (boundedAlpha <= 0f) return
+        graphics.paint = LinearGradientPaint(
+            ribbon.gradientStart,
+            ribbon.gradientEnd,
+            SILK_GRADIENT_FRACTIONS,
+            arrayOf(
+                MotionPalette.withAlpha(accent, 0.0),
+                MotionPalette.withAlpha(accent, boundedAlpha * 0.24),
+                MotionPalette.withAlpha(accent, boundedAlpha * 0.72),
+                MotionPalette.withAlpha(accent, boundedAlpha.toDouble()),
+            ),
+        )
+        graphics.fill(outlinePath(ribbon))
+
+        graphics.stroke = BasicStroke(
+            (ribbon.caretHeight * 0.09f).coerceIn(1.4f, 2.6f),
+            BasicStroke.CAP_ROUND,
+            BasicStroke.JOIN_ROUND,
+        )
+        graphics.paint = LinearGradientPaint(
+            ribbon.gradientStart,
+            ribbon.gradientEnd,
+            SILK_GRADIENT_FRACTIONS,
+            arrayOf(
+                MotionPalette.withAlpha(accent, 0.0),
+                MotionPalette.withAlpha(accent, boundedAlpha * 0.12),
+                MotionPalette.withAlpha(accent, boundedAlpha * 0.58),
+                MotionPalette.withAlpha(accent, boundedAlpha * 0.88),
+            ),
+        )
+        graphics.draw(smoothCenterPath(ribbon.centerLine))
     }
 
     fun paintRoundedSegment(
@@ -89,5 +123,31 @@ internal object CaretTrailPainter {
         )
     }
 
+    private fun outlinePath(ribbon: CaretTrailRibbon): Path2D.Float =
+        Path2D.Float(Path2D.WIND_NON_ZERO, ribbon.outline.size).apply {
+            ribbon.outline.forEachIndexed { index, point ->
+                if (index == 0) moveTo(point.x, point.y) else lineTo(point.x, point.y)
+            }
+            closePath()
+        }
+
+    private fun smoothCenterPath(points: List<Point2D.Float>): Path2D.Float = Path2D.Float().apply {
+        if (points.isEmpty()) return@apply
+        moveTo(points.first().x, points.first().y)
+        if (points.size == 2) {
+            lineTo(points.last().x, points.last().y)
+            return@apply
+        }
+        for (index in 1 until points.lastIndex) {
+            val control = points[index]
+            val next = points[index + 1]
+            val middleX = (control.x + next.x) / 2f
+            val middleY = (control.y + next.y) / 2f
+            quadTo(control.x, control.y, middleX, middleY)
+        }
+        lineTo(points.last().x, points.last().y)
+    }
+
     private val GRADIENT_FRACTIONS = floatArrayOf(0f, 0.48f, 0.82f, 1f)
+    private val SILK_GRADIENT_FRACTIONS = floatArrayOf(0f, 0.38f, 0.78f, 1f)
 }

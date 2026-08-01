@@ -45,10 +45,13 @@ internal class CrossEditorCaretFlow(
         val accent: Color,
         val highContrast: Boolean,
         val style: CaretTrailStyle,
-        val ribbon: SpeedLineRibbon?,
+        val ribbon: CaretTrailRibbon?,
     )
 
-    private class FlowState(var visual: FlowVisual)
+    private class FlowState(
+        var visual: FlowVisual,
+        val samples: CaretTrailSampleBuffer,
+    )
 
     private data class Transition(
         val id: Long,
@@ -96,20 +99,22 @@ internal class CrossEditorCaretFlow(
         val key = EffectKey(ownerToken, OwnerTokens.create(), EffectType.CARET_TRAIL, CROSS_EDITOR_CHANNEL)
         val lifecycle = Disposer.newDisposable("MotionFlow split-editor caret flow")
         Disposer.register(this, lifecycle)
+        val samples = CaretTrailSampleBuffer(MAX_CROSS_TRAIL_SAMPLES).apply {
+            startAt(fromCenter, System.nanoTime())
+        }
+        val initialFrame = CaretFlowGeometry.transitionFrame(
+            fromX = fromCenter.x,
+            fromY = fromCenter.y,
+            fromHeight = from.caretHeight,
+            toX = toCenter.x,
+            toY = toCenter.y,
+            toHeight = to.caretHeight,
+            progress = 0.0,
+            intensityScale = policy.intensityScale,
+        )
         val state = FlowState(
-            flowVisual(
-                frame = CaretFlowGeometry.transitionFrame(
-                    fromX = fromCenter.x,
-                    fromY = fromCenter.y,
-                    fromHeight = from.caretHeight,
-                    toX = toCenter.x,
-                    toY = toCenter.y,
-                    toHeight = to.caretHeight,
-                    progress = 0.0,
-                    intensityScale = policy.intensityScale,
-                ),
-                accent = to.accent,
-            ),
+            visual = flowVisual(initialFrame, to.accent, samples.snapshot()),
+            samples = samples,
         )
         val overlay = SurfaceOverlay(
             target = rootContent,
@@ -131,21 +136,28 @@ internal class CrossEditorCaretFlow(
             ),
             restart = true,
             repaintTarget = overlay,
-            onFrame = { value, _, _ ->
+            onFrame = { value, _, frameNow ->
                 val current = transitions[rootPane]
                 if (current?.id != id) return@animate
+                val frame = CaretFlowGeometry.transitionFrame(
+                    fromX = fromCenter.x,
+                    fromY = fromCenter.y,
+                    fromHeight = from.caretHeight,
+                    toX = toCenter.x,
+                    toY = toCenter.y,
+                    toHeight = to.caretHeight,
+                    progress = value,
+                    intensityScale = policy.intensityScale,
+                )
+                current.state.samples.append(
+                    Point2D.Float(frame.headX, frame.headY),
+                    frameNow,
+                    policy.caretTrailLength,
+                )
                 current.state.visual = flowVisual(
-                    frame = CaretFlowGeometry.transitionFrame(
-                        fromX = fromCenter.x,
-                        fromY = fromCenter.y,
-                        fromHeight = from.caretHeight,
-                        toX = toCenter.x,
-                        toY = toCenter.y,
-                        toHeight = to.caretHeight,
-                        progress = value,
-                        intensityScale = policy.intensityScale,
-                    ),
+                    frame = frame,
                     accent = to.accent,
+                    samples = current.state.samples.snapshot(policy.caretTrailLength),
                 )
                 current.overlay.syncBounds()
             },
@@ -220,6 +232,9 @@ internal class CrossEditorCaretFlow(
             visual.style == CaretTrailStyle.SPEED_LINES -> visual.ribbon?.let { ribbon ->
                 CaretTrailPainter.paintSpeedLine(graphics, ribbon, visual.accent, frame.alpha)
             }
+            visual.style == CaretTrailStyle.SILKY_TRAIL -> visual.ribbon?.let { ribbon ->
+                CaretTrailPainter.paintSilkyTrail(graphics, ribbon, visual.accent, frame.alpha)
+            }
             else -> CaretTrailPainter.paintRoundedSegment(
                 graphics,
                 tail,
@@ -232,26 +247,32 @@ internal class CrossEditorCaretFlow(
         CaretTrailPainter.paintCaretHead(graphics, head, frame.caretHeight, visual.accent, frame.alpha)
     }
 
-    private fun flowVisual(frame: CaretFlowFrame, accent: Color): FlowVisual = FlowVisual(
+    private fun flowVisual(
+        frame: CaretFlowFrame,
+        accent: Color,
+        samples: List<TimedTrailPoint>,
+    ): FlowVisual = FlowVisual(
         frame = frame,
         accent = accent,
         highContrast = policy.highContrast,
         style = policy.caretTrailStyle,
-        ribbon = if (policy.highContrast || policy.caretTrailStyle != CaretTrailStyle.SPEED_LINES) {
-            null
-        } else {
-            CaretFlowGeometry.speedLineRibbon(
-                listOf(
-                    Point2D.Float(frame.tailX, frame.tailY),
-                    Point2D.Float(frame.headX, frame.headY),
-                ),
+        ribbon = when {
+            policy.highContrast -> null
+            policy.caretTrailStyle == CaretTrailStyle.SILKY_TRAIL -> CaretFlowGeometry.trailRibbon(
+                samples.map { it.point },
                 frame.caretHeight,
             )
+            policy.caretTrailStyle == CaretTrailStyle.SPEED_LINES -> CaretFlowGeometry.trailRibbon(
+                listOf(Point2D.Float(frame.tailX, frame.tailY), Point2D.Float(frame.headX, frame.headY)),
+                frame.caretHeight,
+            )
+            else -> null
         },
     )
 
     private companion object {
         const val CROSS_EDITOR_CHANNEL = "cross-editor"
         const val MIN_FLOW_DISTANCE = 24.0
+        const val MAX_CROSS_TRAIL_SAMPLES = 12
     }
 }

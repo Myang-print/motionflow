@@ -19,14 +19,14 @@
 
 MotionFlow observes completed IDE state changes and renders brief, input-transparent cues. The platform remains authoritative: motion never consumes events, moves the caret, changes documents, delays selection, or animates platform-owned layout geometry.
 
-> **Status:** `0.2.1` release candidate. Automated package and compatibility gates are recorded in [release readiness](docs/evidence/release-readiness.md); signed Marketplace publication remains separately gated.
+> **Status:** `0.2.2` release candidate. Automated package and compatibility gates are recorded in [release readiness](docs/evidence/release-readiness.md); signed Marketplace publication remains separately gated.
 
 ## Features
 
 | Surface | Visual feedback | Safety behavior |
 | --- | --- | --- |
-| Editor | Gradient speed-line trail | Tapers from the caret toward a transparent origin; rounded ribbon remains optional |
-| Split editors | Direction-aware cross-pane caret flow | Shared-root overlay only; supports horizontal, vertical, and diagonal approaches |
+| Editor | Silky continuous caret trail | Frame-sampled from the immediately previous caret; speed lines and rounded ribbon remain optional |
+| Split editors | Direction-aware cross-pane caret flow | Reanchors the destination and samples one source-to-target path across the shared root |
 | Editor | Click ripple | Primary-button click only; drag, popup, and right-click are ignored |
 | Editor | Navigation pulse | Triggers only after a configurable large visual-line jump |
 | Editor context | Selected-editor edge cue | No editor-tab traversal or geometry mutation |
@@ -42,7 +42,7 @@ MotionFlow observes completed IDE state changes and renders brief, input-transpa
 
 ### From a GitHub release
 
-1. Download `MotionFlow-0.2.1.zip` from [Releases](https://github.com/Myang-print/motionflow/releases).
+1. Download `MotionFlow-0.2.2.zip` from [Releases](https://github.com/Myang-print/motionflow/releases).
 2. In the IDE, open **Settings | Plugins**.
 3. Select the gear menu, choose **Install Plugin from Disk…**, and select the ZIP.
 
