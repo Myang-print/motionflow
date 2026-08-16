@@ -20,7 +20,7 @@ jobs:
     timeout-minutes: 45
     steps:
       - name: Check out source
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
 
       - name: Set up Java 21
         uses: actions/setup-java@v5
@@ -65,7 +65,7 @@ jobs:
     timeout-minutes: 60
     steps:
       - name: Check out source
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
 
       # Two extracted IntelliJ baselines exceed the free space left by the
       # general-purpose runner image. These SDKs are unrelated to this job.
@@ -106,7 +106,7 @@ jobs:
         os: [windows-latest, macos-latest]
     steps:
       - name: Check out source
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
 
       - name: Set up Java 21
         uses: actions/setup-java@v5
